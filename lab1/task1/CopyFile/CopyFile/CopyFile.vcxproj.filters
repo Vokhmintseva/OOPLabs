@@ -26,11 +26,6 @@
     <Text Include="excessFile.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CopyFile.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Tests.bat">
       <Filter>Исходные файлы</Filter>
     </None>

@@ -1,0 +1,10 @@
+﻿  CopyFile.cpp
+  CopyFile.vcxproj -> D:\OOP1\lab1\task1\CopyFile\x64\Debug\CopyFile.exe
+  test 1 has passed
+  test 2 has passed
+  Failed to open 'missingFile.txt' for reading
+  test 3 has passed
+  test 4 has passed
+  test 5 has passed
+  test 6 has passed
+  All the tests have passed successfully

@@ -1,5 +1,5 @@
 ﻿  CopyFile.cpp
-  CopyFile.vcxproj -> D:\OOP1\lab1\task1\CopyFile\x64\Debug\CopyFile.exe
+  CopyFile.vcxproj -> D:\OOP\lab1\task1\CopyFile\x64\Debug\CopyFile.exe
   test 1 has passed
   test 2 has passed
   Failed to open 'missingFile.txt' for reading

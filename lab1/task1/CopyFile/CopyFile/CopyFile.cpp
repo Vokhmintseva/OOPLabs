@@ -5,7 +5,6 @@
 #include <fstream>
 #include <optional>
 #include <string>
-#include "CopyFile.h"
 
 struct Args
 {

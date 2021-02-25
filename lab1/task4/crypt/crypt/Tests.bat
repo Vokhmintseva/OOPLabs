@@ -1,31 +1,31 @@
 @echo off
 
 SET MyProgram="%~1"
-set OUT="%TEMP%\output.txt"
+set OUT="%TEMP%\output.bin"
 
 if  %MyProgram%=="" (
 	echo please specify path to program
 	exit /B 1
 )
 
-%MyProgram% crypt inputToCrypt.txt %OUT% 10 || goto err
-fc %OUT% crypted.txt > nul || goto err
+%MyProgram% crypt inputToCrypt.bin %OUT% 10 || goto err
+fc %OUT% crypted.bin > nul || goto err
 echo test 1 has passed
 
-%MyProgram% decrypt crypted.txt %OUT% 10 || goto err
-fc %OUT% inputToCrypt.txt > nul || goto err
+%MyProgram% decrypt crypted.bin %OUT% 10 || goto err
+fc %OUT% inputToCrypt.bin > nul || goto err
 echo test 2 has passed
 
-%MyProgram% decryptIt crypted.txt %OUT% 10 && goto err
+%MyProgram% decryptIt crypted.bin %OUT% 10 && goto err
 echo test 3 has passed
 
-%MyProgram% crypt inputToCrypt.txt %OUT% && goto err
+%MyProgram% crypt inputToCrypt.bin %OUT% && goto err
 echo test 4 has passed
 
-%MyProgram% crypt inputToCrypt.txt %OUT% 256 && goto err
+%MyProgram% crypt inputToCrypt.bin %OUT% 256 && goto err
 echo test 5 has passed
 
-%MyProgram% crypt notExistingFile.txt %OUT% 15 && goto err
+%MyProgram% crypt notExistingFile.bin %OUT% 15 && goto err
 echo test 6 has passed
 
 echo All the tests have passed successfully

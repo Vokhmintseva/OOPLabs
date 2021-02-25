@@ -164,8 +164,8 @@
     <ResourceCompile Include="crypt.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="inputToCrypt.txt" />
-    <Text Include="crypted.txt" />
+    <Text Include="inputToCrypt.bin" />
+    <Text Include="crypted.bin" />
     <Text Include="testFile.txt" />
   </ItemGroup>
   <ItemGroup>

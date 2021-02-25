@@ -77,7 +77,6 @@ float** invert (float* m[], float det)
 {
     float** currMatrix = new float*[3];
     for (int i = 0; i < 3; i++) {
-        //выделяем память под массив из 3 элементов типа float, и currMatrix[i] - указатель на него: адрес массива записывается в указатель
         currMatrix[i] = new float[3];
         for (int j = 0; j < 3; j++) {
             currMatrix[i][j] = getAddition(m, i, j) / det;

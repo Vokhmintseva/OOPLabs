@@ -31,8 +31,8 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="testFile.txt" />
-    <Text Include="inputToCrypt.txt" />
-    <Text Include="crypted.txt" />
+    <Text Include="inputToCrypt.bin" />
+    <Text Include="crypted.bin" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests.bat">

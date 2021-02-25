@@ -12,7 +12,7 @@ struct Args
     std::string outputFileName;
 };
 
-std::optional<Args> parseArgs(int argc, char* argv[])
+std::optional<Args> ParseArgs(int argc, char* argv[])
 {
     if (argc != 3)
     {
@@ -41,7 +41,7 @@ void CopyStreams(std::ifstream& input, std::ofstream& output)
 
 int main(int argc, char* argv[])
 {
-    auto args = parseArgs(argc, argv);
+    auto args = ParseArgs(argc, argv);
     if (!argc) {
         return 1;
     }

@@ -1,0 +1,1 @@
+This matrix is singular and non-invertible as the determinant is 0

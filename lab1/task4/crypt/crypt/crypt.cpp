@@ -138,6 +138,10 @@ int main(int argc, char* argv[])
     {
         DecryptFile(input, output, key);
     }
-
+    if (!output.flush())
+    {
+        std::cout << "Failed to write data to output file\n";
+        return 1;
+    }
     return 0;
 }

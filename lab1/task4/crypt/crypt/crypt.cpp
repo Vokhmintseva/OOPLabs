@@ -33,7 +33,8 @@ Args ParseArgs(int argc, char* argv[])
     {
         args.command = Crypt;
     }
-    else if (argv1 == "decrypt") {
+    else if (argv1 == "decrypt")
+    {
         args.command = Decrypt;
     }
     else
@@ -62,31 +63,23 @@ Args ParseArgs(int argc, char* argv[])
 
 char EncryptChar(char byte)
 {
-    char b012 = byte;
-    b012 = (b012 & 0b00000111) << 2;
-    char b34 = byte;
-    b34 = (b34 & 0b00011000) << 3;
-    char b56 = byte;
-    b56 = (b56 & 0b01100000) >> 5;
-    char b7 = byte;
-    b7 = (b7 & 0x80) >> 2;
+    char b012 = (byte & 0b00000111) << 2;
+    char b34 = (byte & 0b00011000) << 3;
+    char b56 = (byte & 0b01100000) >> 5;
+    char b7 = (byte & 0x80) >> 2;
     return b012 | b34 | b56 | b7;
 }
 
 char DecryptChar(char byte)
 {
-    char b01 = byte;
-    b01 = (b01 & 0b00000011) << 5;
-    char b234 = byte;
-    b234 = (b234 & 0b00011100) >> 2;
-    char b5 = byte;
-    b5 = (b5 & 0b00100000) << 2;
-    char b67 = byte;
-    b67 = (b67 & 0b11000000) >> 3;
+    char b01 = (byte & 0b00000011) << 5;
+    char b234 = (byte & 0b00011100) >> 2;
+    char b5 = (byte & 0b00100000) << 2;
+    char b67 = (byte & 0b11000000) >> 3;
     return b01 | b234 | b5 | b67;
 }
 
-void EncryptFile(std::fstream& input, std::fstream& output, char key)
+void EncryptFile(std::istream& input, std::ostream& output, char key)
 {
     char ch;
     while (input.read(&ch, sizeof(char)))
@@ -97,7 +90,7 @@ void EncryptFile(std::fstream& input, std::fstream& output, char key)
     }
 }
 
-void DecryptFile(std::fstream& input, std::fstream& output, char key)
+void DecryptFile(std::istream& input, std::ostream& output, char key)
 {
     char ch;
     while (input.read(&ch, sizeof(char)))
@@ -121,16 +114,17 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    std::fstream input(args.inputFileName, std::ios_base::in|std::ios_base::binary); 
-    std::fstream output(args.outputFileName, std::ios_base::out|std::ios_base::binary);
+    std::ifstream input(args.inputFileName, std::ios_base::binary); 
+    std::ofstream output(args.outputFileName, std::ios_base::binary);
     
-    if (!input.is_open()) {
+    if (!input.is_open())
+    {
         std::cout << "Failed to open '" << args.inputFileName << "' for reading\n";
         return 1;
     }
     
-    if (!output.is_open()) {
-        input.close();
+    if (!output.is_open()) 
+    {
         std::cout << "Failed to open '" << args.outputFileName << "' for writing\n";
         return 1;
     }
@@ -139,12 +133,11 @@ int main(int argc, char* argv[])
     if (args.command == Crypt)
     {
         EncryptFile(input, output, key);
-    } else if (args.command == Decrypt)
+    }
+    else if (args.command == Decrypt)
     {
         DecryptFile(input, output, key);
     }
 
-    input.close();
-    output.close();
     return 0;
 }

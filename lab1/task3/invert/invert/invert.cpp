@@ -21,7 +21,7 @@ std::optional<std::string> ParseArgs(int argc, char* argv[])
     return argv[1];
 }
 
-double GetAddition(const Matrix3x3& m, int row, int col)
+double GetAddition(const Matrix3x3 &m, int row, int col)
 {
     double b[2][2];
     int i, j, bi, bj;
@@ -44,7 +44,7 @@ double GetAddition(const Matrix3x3& m, int row, int col)
     return pow(-1, row + col) * (b[0][0] * b[1][1] - b[0][1] * b[1][0]);
 }
 
-double CalcDeterminant(const Matrix3x3& m, int col)
+double CalcDeterminant(const Matrix3x3 &m, int col)
 {
     double determinant = 0.0f;
     for (int j = 0; j < col; j++)
@@ -54,7 +54,7 @@ double CalcDeterminant(const Matrix3x3& m, int col)
     return determinant;
 }
 
-void PrintMatrixСoeffs(const Matrix3x3& m, int row, int col)
+void PrintMatrixСoeffs(const Matrix3x3 &m, int row, int col)
 {
     for (int i = 0; i < row; i++)
     {
@@ -79,7 +79,7 @@ void TransposeMatrix(Matrix3x3 &m, int row, int col)
 
 std::optional<Matrix3x3> Invert(Matrix3x3 &m, int row, int col)
 {
-    double determinant = CalcDeterminant(m, 3);
+    double determinant = CalcDeterminant(m, col);
     if (determinant == 0.0f)
     {
         return std::nullopt;
@@ -127,7 +127,7 @@ void ReadMatrix(Matrix3x3& matrix, std::ifstream& inputFile, int row, int col)
             strm >> matrix[strCounter - 1][j];
         }
     }
-    inputFile.close();
+    
     if (strCounter != row)
     {
         throw std::invalid_argument("The input file lacks lines\n");

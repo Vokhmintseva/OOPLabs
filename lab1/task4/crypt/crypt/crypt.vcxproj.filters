@@ -30,9 +30,8 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="testFile.txt" />
     <Text Include="inputToCrypt.bin" />
-    <Text Include="crypted.bin" />
+    <Text Include="encrypted.bin" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests.bat">

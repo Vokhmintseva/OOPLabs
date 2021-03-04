@@ -8,8 +8,11 @@
 #include <string>
 #include <regex>
 #include <math.h>
+#include <array>
 
-std::optional<std::string> parseArgs(int argc, char* argv[])
+using Matrix3x3 = std::array<std::array<double, 3>, 3>;
+
+std::optional<std::string> ParseArgs(int argc, char* argv[])
 {
     if (argc != 2) {
         return std::nullopt;
@@ -17,9 +20,9 @@ std::optional<std::string> parseArgs(int argc, char* argv[])
     return argv[1];
 }
 
-float getAddition(float* m[], int row, int col)
+double GetAddition(Matrix3x3 m, int row, int col)
 {
-    float b[2][2];
+    double b[2][2];
     int i, j, bi, bj;
     bj = 0;
     for (i = 0, bi = 0; i < 3; i++)
@@ -38,33 +41,33 @@ float getAddition(float* m[], int row, int col)
     return pow(-1, row + col) * (b[0][0] * b[1][1] - b[0][1] * b[1][0]);
 }
 
-float calcDeterminant(float* m[])
+double CalcDeterminant(Matrix3x3 m, int col)
 {
-    float determinant = 0.0f;
-    for (int j = 0; j < 3; j++)
+    double determinant = 0.0f;
+    for (int j = 0; j < col; j++)
     {
-         determinant += m[0][j] * getAddition(m, 0, j);
+         determinant += m[0][j] * GetAddition(m, 0, j);
     }
     return determinant;
 }
 
-void printMatrixСoeffs(float *matrix[])
+void PrintMatrixСoeffs(Matrix3x3 m, int row, int col)
 {
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < row; i++)
     {
-        for (int j = 0; j < 3; j++) 
+        for (int j = 0; j < col; j++) 
         {
-            printf("%-10.3f", matrix[i][j]);
+            printf("%-10.3f", m[i][j]);
         }
         std::cout << "\n";
     }
 }
 
-void transposeMatrix(float *m[], int row, int col)
+void TransposeMatrix(Matrix3x3 &m, int row, int col)
 {
-    float curValue;
-    for (int i = 0; i < 3; i++) {
-        for (int j = i + 1; j < 3; j++)
+    double curValue;
+    for (int i = 0; i < row; i++) {
+        for (int j = i + 1; j < col; j++)
         {
             curValue = m[i][j];
             m[i][j] = m[j][i];
@@ -73,16 +76,15 @@ void transposeMatrix(float *m[], int row, int col)
     }
 }
 
-float** invert (float* m[], float det)
+Matrix3x3 Invert (Matrix3x3 m, double det, int row, int col)
 {
-    float** currMatrix = new float*[3];
-    for (int i = 0; i < 3; i++) {
-        currMatrix[i] = new float[3];
-        for (int j = 0; j < 3; j++) {
-            currMatrix[i][j] = getAddition(m, i, j) / det;
+    Matrix3x3 currMatrix;
+    for (int i = 0; i < row; i++) {
+        for (int j = 0; j < col; j++) {
+            currMatrix[i][j] = GetAddition(m, i, j) / det;
         }
     }
-    transposeMatrix(currMatrix, 3, 3);
+    TransposeMatrix(currMatrix, row, col);
     return currMatrix;
 }
 
@@ -91,67 +93,70 @@ bool IsValidStr(std::string str) {
     return regex_match(str, r);
 }
 
-void deleteMatrix (float* m[])
+void ReadMatrix(Matrix3x3& matrix, std::ifstream& inputFile, int row, int col)
 {
-    for (int i = 0; i < 3; i++)
+    uint8_t strCounter = 0;
+    std::string line;
+    while (getline(inputFile, line))
     {
-        delete[] m[i];
+        strCounter++;
+        if (strCounter > row)
+        {
+            inputFile.close();
+            throw std::invalid_argument("There are too many lines in the input file\n");
+        }
+        if (!IsValidStr(line))
+        {
+            inputFile.close();
+            throw std::invalid_argument("There is incorrect line in the input file\n");
+        }
+
+        std::stringstream strm(line);
+        for (int j = 0; j < col; j++) {
+            strm >> matrix[strCounter - 1][j];
+        }
     }
-    delete[] m;
+    inputFile.close();
+    if (strCounter != row)
+    {
+        throw std::invalid_argument("The input file lacks lines\n");
+    }
 }
 
 int main(int argc, char* argv[])
 {
-    auto arg = parseArgs(argc, argv);
-    if (!argc) {
+    auto arg = ParseArgs(argc, argv);
+    if (!arg) {
         std::cout << "Invalid argument count\n";
         std::cout << "the format of command line is: invert.exe <matrix.txt>\n";
         return 1;
     }
-    std::stringstream strm;
+
     std::ifstream inputFile;
     inputFile.open(arg->c_str());
     if (!inputFile.is_open()) {
         std::cout << "Failed to open '" << arg->c_str() << "' for reading\n";
         return 1;
     }
-    uint8_t strCounter = 0;
-    std::string line;
-    float** matrix = new float* [3];
-    while (getline(inputFile, line))
+
+    Matrix3x3 matrix;
+    try
     {
-        if (!IsValidStr(line))
-        {
-            std::cout << "Not a number\n";
-            return 1;
-        }
-        
-        std::stringstream strm(line);
-        matrix[strCounter] = new float[3];
-        for (int j = 0; j < 3; j++) {
-            strm >> matrix[strCounter][j];
-        }
-        strCounter++;
+        ReadMatrix(matrix, inputFile, 3, 3);
     }
-    inputFile.close();
-    if (strCounter != 3)
+    catch (const std::exception& ex)
     {
-        std::cout << "There can be only 3 lines in the input file\n";
+        std::cout << ex.what() << std::endl;
         return 1;
     }
-    
-    float determinant = calcDeterminant(matrix);
+
+    double determinant = CalcDeterminant(matrix, 3);
     if (determinant == 0.0f) {
-        std::cout << "This matrix is singular and non-invertible as the determinant is 0";
+        std::cout << "This matrix is non-invertible as the determinant is 0\n";
         return 0;
     }
     
-    float **invertedMatrix = invert (matrix, determinant);
-    printMatrixСoeffs(invertedMatrix);
-
-    deleteMatrix(matrix);
-    deleteMatrix(invertedMatrix);
- 
+    Matrix3x3 invertedMatrix = Invert (matrix, determinant, 3, 3);
+    PrintMatrixСoeffs(invertedMatrix, 3, 3);
     return 0;
 }
-

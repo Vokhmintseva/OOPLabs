@@ -27,19 +27,19 @@ echo Test 5 has passed
 fc %OUT% "%~dp0198-out.txt" > nul || goto err
 echo Test 6 has passed
 
-%PROGRAM% -5 > %OUT% && goto err
+%PROGRAM% -5 && goto err
 echo Test 7 has passed
 
-%PROGRAM% 256 > %OUT% && goto err
+%PROGRAM% 256 && goto err
 echo Test 8 has passed
 
-%PROGRAM% 5F > %OUT% && goto err
+%PROGRAM% 5F && goto err
 echo Test 9 has passed
 
-%PROGRAM% 15 67 > %OUT% && goto err
+%PROGRAM% 15 67 && goto err
 echo Test 10 has passed
 
-%PROGRAM% > %OUT% && goto err
+%PROGRAM% && goto err
 echo Test 11 has passed
 
 echo All the tests have passed successfully

@@ -5,24 +5,14 @@
 #include <optional>
 #include <string>
 
-std::optional<std::string> parseArgs(int argc, char* argv[])
+uint8_t ParseArgs(int argc, char* argv[])
 {
-    if (argc != 2) {
-        return std::nullopt;
+    if (argc != 2)
+    {
+        throw std::invalid_argument("Invalid number of arguments");
     }
-    return argv[1];
-}
-
-uint8_t reverse(uint8_t num) {
-    num = (num & 0xF0) >> 4 | (num & 0x0F) << 4;
-    num = (num & 0xCC) >> 2 | (num & 0x33) << 2;
-    num = (num & 0xAA) >> 1 | (num & 0x55) << 1;
-    return num;
-}
-
-uint8_t ParseByte(const std::string& str)
-{
     size_t end;
+    std::string str(argv[1]);
     int val = std::stoi(str, &end);
     if (end != str.length())
     {
@@ -30,23 +20,24 @@ uint8_t ParseByte(const std::string& str)
     }
     if (val < 0 || val > UINT8_MAX)
     {
-        throw std::out_of_range(str + " doesn't fit to byte");
+        throw std::out_of_range(str + " doesn't fit byte");
     }
     return static_cast<uint8_t>(val);
 }
 
+uint8_t Reverse(uint8_t num) {
+    num = (num & 0xF0) >> 4 | (num & 0x0F) << 4;
+    num = (num & 0xCC) >> 2 | (num & 0x33) << 2;
+    num = (num & 0xAA) >> 1 | (num & 0x55) << 1;
+    return num;
+}
+
 int main(int argc, char* argv[])
 {
-    auto arg = parseArgs(argc, argv);
-    if (!arg) {
-        std::cout << "Invalid argument count\n";
-        std::cout << "the format of command line is: flypbyte.exe <number>\n";
-        return 1;
-    }
     uint8_t byte = 0;
     try
     {
-        byte = ParseByte(arg->c_str());
+        byte = ParseArgs(argc, argv);
     }
     catch (const std::exception& ex)
     {
@@ -54,8 +45,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    uint8_t reversed = reverse(byte);
+    uint8_t reversed = Reverse(byte);
     std::cout << (int)reversed << "\n";
     return 0;
 }
-

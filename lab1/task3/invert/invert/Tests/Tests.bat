@@ -35,8 +35,7 @@ echo test 7 has passed
 %MyProgram% empty.txt && goto err
 echo test 8 has passed
 
-%MyProgram% matrix0determ.txt > %OUT% || goto err
-fc %OUT% "%~dp0matrix0determ-output.txt" > nul || goto err
+%MyProgram% matrix0determ.txt && goto err
 echo test 9 has passed
 
 %MyProgram% matrix3x5.txt && goto err

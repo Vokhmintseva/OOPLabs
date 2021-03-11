@@ -21,9 +21,10 @@ int ParseArgs(int argc, char* argv[])
 
 std::set<int> GeneratePrimeNumbersSet(int upperBound)
 {
-	if (upperBound < 0 || upperBound > 100000000)
+	std::set<int> primeNumbers;
+    if (upperBound < 0 || upperBound > 100000000)
 	{
-		throw std::out_of_range("Out of range");
+		return primeNumbers;
 	}
     std::vector<bool> sieve(upperBound, true);
     int i = 2;
@@ -42,11 +43,9 @@ std::set<int> GeneratePrimeNumbersSet(int upperBound)
         i++;
     }
 
-    std::set<int> primeNumbers;
-
     for (int k = 1; k < upperBound; k++)
     {
-        if (sieve[k] == true)
+        if (sieve[k])
         {
            primeNumbers.insert(k + 1);
         }

@@ -16,15 +16,15 @@ int ParseArgs(int argc, char* argv[])
     {
         throw std::invalid_argument("Not a number");
     }
-    if (val < 0 || val > 100000000)
-    {
-        throw std::out_of_range(str + " Out of range");
-    }
     return static_cast<int>(val);
 }
 
 std::set<int> GeneratePrimeNumbersSet(int upperBound)
 {
+	if (upperBound < 0 || upperBound > 100000000)
+	{
+		throw std::out_of_range("Out of range");
+	}
     std::vector<bool> sieve(upperBound, true);
     int i = 2;
     double sq = sqrt(upperBound);
@@ -32,7 +32,7 @@ std::set<int> GeneratePrimeNumbersSet(int upperBound)
     {
         if (sieve[i - 1] == true)
         {
-            int j = pow(i, 2);
+            int j = i * i;
             while (j <= upperBound)
             {
                 sieve[j - 1] = false;

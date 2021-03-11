@@ -34,10 +34,11 @@ uint8_t Reverse(uint8_t num) {
 
 int main(int argc, char* argv[])
 {
-    uint8_t byte = 0;
     try
     {
-        byte = ParseArgs(argc, argv);
+        uint8_t byte = ParseArgs(argc, argv);
+        uint8_t reversed = Reverse(byte);
+        std::cout << (int)reversed << "\n";
     }
     catch (const std::exception& ex)
     {
@@ -45,7 +46,5 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    uint8_t reversed = Reverse(byte);
-    std::cout << (int)reversed << "\n";
     return 0;
 }

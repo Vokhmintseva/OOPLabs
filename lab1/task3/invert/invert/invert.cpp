@@ -9,6 +9,7 @@
 #include <regex>
 #include <math.h>
 #include <array>
+#include <iomanip>
 
 using Matrix3x3 = std::array<std::array<double, 3>, 3>;
 
@@ -56,9 +57,9 @@ double CalcDeterminant(const Matrix3x3 &m, int col)
 
 void PrintMatrixСoeffs(const Matrix3x3 &m, int row, int col)
 {
-    for (int i = 0; i < row; i++)
+    for (size_t i = 0; i < m.size(); i++)
     {
-        for (int j = 0; j < col; j++) 
+        for (size_t j = 0; j < m[0].size(); j++)
         {
             printf("%-10.3f", m[i][j]);
         }
@@ -69,7 +70,8 @@ void PrintMatrixСoeffs(const Matrix3x3 &m, int row, int col)
 void TransposeMatrix(Matrix3x3 &m, int row, int col)
 {
     double curValue;
-    for (int i = 0; i < row; i++) {
+    for (int i = 0; i < row; i++)
+    {
         for (int j = i + 1; j < col; j++)
         {
             std::swap(m[i][j], m[j][i]);
@@ -136,6 +138,7 @@ void ReadMatrix(Matrix3x3& matrix, std::ifstream& inputFile, int row, int col)
 
 int main(int argc, char* argv[])
 {
+    //std::cout << std::setw(10) << std::setprecision(3) << std::fixed << 123.456789 << "\n";
     auto arg = ParseArgs(argc, argv);
     if (!arg) {
         std::cout << "Invalid argument count\n";
@@ -162,7 +165,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    auto invertedMatrix = Invert (matrix, 3, 3);
+    auto invertedMatrix = Invert(matrix, 3, 3);
     if (!invertedMatrix)
     {
         std::cout << "The matrix is non-invertible\n" << std::endl;

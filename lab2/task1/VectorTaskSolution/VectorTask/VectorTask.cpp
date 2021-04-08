@@ -11,10 +11,10 @@ int main()
 {
 	try
 	{
-		vector<double> array = getVector(cin);
-		multiplyElements(array);
+		vector<double> array = GetVector(cin);
+		MultiplyElements(array);
 		sort(array.begin(), array.end());
-		printVector(cout, array);
+		PrintVector(cout, array);
 	}
 	catch (const std::exception& ex)
 	{

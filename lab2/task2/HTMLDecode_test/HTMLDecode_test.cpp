@@ -10,19 +10,19 @@
 SCENARIO("Decoding any string")
 {
 	std::string anyStr = "Cat &lt;says&gt; &quot;Meow&quot;. M&amp;M&apos;s";
-	REQUIRE(HtmlDecode(anyStr) == "Cat <says> \"Meow\". M&M`s");
+	REQUIRE(HtmlDecode(anyStr) == "Cat <says> \"Meow\". M&M's");
 }
 
 SCENARIO("Decoding any string2")
 {
 	std::string anyStr = "Cat &lt;&lt;&lt;says&gt;&gt;&gt; &quot;Meow&quot;. M&amp;M&apos;s";
-	REQUIRE(HtmlDecode(anyStr) == "Cat <<<says>>> \"Meow\". M&M`s");
+	REQUIRE(HtmlDecode(anyStr) == "Cat <<<says>>> \"Meow\". M&M's");
 }
 
 SCENARIO("Decoding any string3")
 {
 	std::string anyStr = "&apos;&apos;Cat &lt;says&gt; &quot;Meow&quot;. M&amp;M&apos;s&apos;&apos;";
-	REQUIRE(HtmlDecode(anyStr) == "``Cat <says> \"Meow\". M&M`s``");
+	REQUIRE(HtmlDecode(anyStr) == "''Cat <says> \"Meow\". M&M's''");
 }
 
 SCENARIO("Decoding any string4")
@@ -73,7 +73,7 @@ SCENARIO("Decoding several strings")
 		THEN("output stream contains EOL in the end as well")
 		{
 			DecodeLines(input, output);
-			CHECK(output.str() == "\"input\" `stream` <contains> &some lines&\n ``input stream`` contains some lines\"`<>&\n");
+			CHECK(output.str() == "\"input\" 'stream' <contains> &some lines&\n ''input stream'' contains some lines\"'<>&\n");
 			CHECK(input.eof());
 		}
 	}
@@ -84,7 +84,7 @@ SCENARIO("Decoding several strings")
 		THEN("output stream contains empty lines as well")
 		{
 			DecodeLines(input, output);
-			CHECK(output.str() == "Cat <says> \"Meow\". M&M`s\n\nCat <says> \"Meow\". M&M`s");
+			CHECK(output.str() == "Cat <says> \"Meow\". M&M's\n\nCat <says> \"Meow\". M&M's");
 			CHECK(input.eof());
 		}
 	}

@@ -1,4 +1,4 @@
-п»ї// MiniDictionary.cpp : Р­С‚РѕС‚ С„Р°Р№Р» СЃРѕРґРµСЂР¶РёС‚ С„СѓРЅРєС†РёСЋ "main". Р—РґРµСЃСЊ РЅР°С‡РёРЅР°РµС‚СЃСЏ Рё Р·Р°РєР°РЅС‡РёРІР°РµС‚СЃСЏ РІС‹РїРѕР»РЅРµРЅРёРµ РїСЂРѕРіСЂР°РјРјС‹.
+// MiniDictionary.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
 //
 
 #include <iostream>
@@ -12,8 +12,9 @@ int main(int argc, char* argv[])
 	system("chcp 1251");
 	try
 	{
-		std::map <std::string, std::string> dictionary = GetDictionaryMap(argc, argv);
-		std::string fileName = argc == 1 ? "Dictionary.txt" : argv[1];
+		CheckNumberOfArgs(argc);
+		std::string fileName = (argc == 2) ? argv[1] : GetDictionaryFileName(std::cin, std::cout);
+		std::map<std::string, std::string> dictionary = GetDictionaryMap(fileName);
 		Inquire(std::cin, std::cout, dictionary, fileName);
 	}
 	catch (const std::exception& ex)

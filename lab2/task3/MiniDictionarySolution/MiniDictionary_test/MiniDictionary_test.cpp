@@ -8,79 +8,54 @@
 #include "../../../../catch.hpp"
 #include "../MiniDictionary/Dictionary.h"
 
-SCENARIO("dictionary exists")
+SCENARIO("test existing file")
 {
-	system("chcp 1251");
-	char param1[] = "program";
-	char param2[] = "../MiniDictionary/Dictionary.txt";
-	char* argv[] = {param1, param2};
-	int argc = 2;
-	std::map <std::string, std::string> dictionary = GetDictionaryMap(argc, argv);
-	std::ostringstream output;
-	WHEN("words \"dog\ncat\" given")
+	GIVEN("dictionary")
 	{
-		std::istringstream input("dog\ncat");
-		Inquire(input, output, dictionary, argv[1]);
-		REQUIRE(output.str() == "собака\nкот, кошка\n");
+		system("chcp 1251");
+		std::map<std::string, std::string> dictionary = GetDictionaryMap("test.txt");
+		std::ostringstream output;
 
-	}
+		WHEN("giving word 'cat'")
+		{
+			std::istringstream input;
+			bool wasFound = false;
+			TranslateWord(input, output, dictionary, "cat", wasFound);
 
-	WHEN("word \"The Red Square\" given")
-	{
-		std::istringstream input("The Red Square");
-		Inquire(input, output, dictionary, argv[1]);
-		REQUIRE(output.str() == "Красная Площадь\n");
-	}
+			THEN("translation found")
+			{
+				REQUIRE(output.str() == "кот, кошка\n");
+			}
+		}
+		WHEN("giving word 'day'")
+		{
+			std::istringstream input;
+			bool wasFound = false;
+			TranslateWord(input, output, dictionary, "day", wasFound);
 
-	WHEN("unknown word \"orange\" given and saved in the dictionary")
-	{
-		std::istringstream input("orange\nапельсин\n...\nY\n");
-		Inquire(input, output, dictionary, argv[1]);
-		REQUIRE(output.str() == "Unknown word \"orange\". Enter translation or empty string to reject.\nThe word \"orange\" has been saved in the dictionary as \"апельсин\".\nThe dictionary has been changed. Enter Y or y to save changes or N or n not to save them\n");
-	}
+			THEN("translation found")
+			{
+				REQUIRE(output.str() == "день\n");
+			}
+		}
+		WHEN("giving unknown word 'week'")
+		{
+			std::istringstream input("неделя");
+			bool wasFound = false;
+			TranslateWord(input, output, dictionary, "week", wasFound);
 
-	WHEN("the word \"orange\" saved earlier given and found in the dictionary")
-	{
-		std::istringstream input("orange");
-		Inquire(input, output, dictionary, argv[1]);
-		REQUIRE(output.str() == "апельсин\n");
+			THEN("translation not found")
+			{
+				REQUIRE(output.str() == "Unknown word \"week\". Enter translation or empty string to reject.\nThe word \"week\" has been saved in the dictionary as \"неделя\".\n");
+			}
+			output.str("");
+			TranslateWord(input, output, dictionary, "week", wasFound);
+			THEN("translation found")
+			{
+				REQUIRE(output.str() == "неделя\n");
+			}
+		}
 	}
 }
 
-SCENARIO("dictionary doesn't exist")
-{
-	system("chcp 1251");
-	char param1[] = "program";
-	char* argv[] = { param1 };
-	int argc = 1;
-	std::map <std::string, std::string> dictionary = GetDictionaryMap(argc, argv);
-	std::ostringstream output;
-	WHEN("words \"cat\n")
-	{
-		std::istringstream input("world\nмир\n...\nY\n");
-		Inquire(input, output, dictionary, "../MiniDictionary/TestDictionary.txt");
-		REQUIRE(output.str() == "Unknown word \"world\". Enter translation or empty string to reject.\nThe word \"world\" has been saved in the dictionary as \"мир\".\nThe dictionary has been changed. Enter Y or y to save changes or N or n not to save them\n");
-	}
 
-	/*
-	WHEN("word \"The Red Square\" given")
-	{
-		std::istringstream input("The Red Square");
-		Inquire(input, output, dictionary, argv[1]);
-		REQUIRE(output.str() == "Красная Площадь\n");
-	}
-
-	WHEN("unknown word \"orange\" given and saved in the dictionary")
-	{
-		std::istringstream input("orange\nапельсин\n...\nY\n");
-		Inquire(input, output, dictionary, argv[1]);
-		REQUIRE(output.str() == "Unknown word \"orange\". Enter translation or empty string to reject.\nThe word \"orange\" has been saved in the dictionary as \"апельсин\".\nThe dictionary has been changed. Enter Y or y to save changes or N or n not to save them\n");
-	}
-
-	WHEN("the word \"orange\" saved earlier given and found in the dictionary")
-	{
-		std::istringstream input("orange");
-		Inquire(input, output, dictionary, argv[1]);
-		REQUIRE(output.str() == "апельсин\n");
-	}*/
-}

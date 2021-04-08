@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{c623bbc9-bbae-497a-a55b-c0335b67821f}</ProjectGuid>
-    <RootNamespace>HTMLDecodetest</RootNamespace>
+    <ProjectGuid>{cb7ee137-fe0f-4426-9666-8b38d4feeed3}</ProjectGuid>
+    <RootNamespace>Replace</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -95,8 +95,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>"$(TargetPath)"</Command>
+      <Command>"$(ProjectDir)Tests.bat" "$(TargetPath)"</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -115,8 +119,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>"$(TargetPath)"</Command>
+      <Command>"$(ProjectDir)Tests.bat" "$(TargetPath)"</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -131,8 +139,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>"$(TargetPath)"</Command>
+      <Command>"$(ProjectDir)Tests.bat" "$(TargetPath)"</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -151,15 +163,22 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>"$(TargetPath)"</Command>
+      <Command>"$(ProjectDir)Tests.bat" "$(TargetPath)"</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\HTMLDecode\HTMLDecode\Decode.cpp" />
-    <ClCompile Include="HTMLDecode_test.cpp" />
+    <ClCompile Include="Replace.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\HTMLDecode\HTMLDecode\Decode.h" />
+    <Text Include="input.txt" />
+    <Text Include="output.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Tests.bat" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

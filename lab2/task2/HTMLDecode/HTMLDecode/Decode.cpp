@@ -5,38 +5,59 @@
 
 using namespace std;
 
+unsigned int GetMaxLenOfSearchStr(const map<string, string> &codes)
+{
+	unsigned int maxLenOfSearchStr = 0;
+	for (const auto& code : codes)
+	{
+		if (code.first.length() > maxLenOfSearchStr)
+		{
+			maxLenOfSearchStr = code.first.length();
+		}
+	}
+	return maxLenOfSearchStr;
+}
+
 std::string HtmlDecode(std::string const& html)
 {
-	string decodedStr = html.substr(0);
-	map<string, string> codes = { { "&quot;", "\"" },
-		{ "&apos;", "`" },
+	const map<string, string> codes =
+	{
+		{ "&quot;", "\"" },
+		{ "&apos;", "'" },
 		{ "&lt;", "<" },
 		{ "&gt;", ">" },
-		{ "&amp;", "&" } };
+		{ "&amp;", "&" }
+	};
 
-	map<string, string>::iterator it;
-	size_t posApos = 0;
-	size_t posSem = 0;
-	posApos = decodedStr.find("&", posApos);
-	while (posApos != string::npos)
+	unsigned int maxLenOfSearchStr = GetMaxLenOfSearchStr(codes);
+
+	string decodedStr = "";
+	size_t prevPos = 0;
+	size_t newPos = html.find('&', prevPos);
+	while (newPos != std::string::npos)
 	{
-		posSem = decodedStr.find(";", posApos + 1);
-		if (posSem == string::npos)
+		decodedStr += html.substr(prevPos, newPos - prevPos);
+		string captureStr = html.substr(newPos, maxLenOfSearchStr);
+		bool found = false;
+		unsigned int offset = 1;
+		for (const auto& [key, value] : codes)
 		{
-			break;
-		}
-		string subStr = decodedStr.substr(posApos, posSem - posApos + 1);
-		
-		for (it = codes.begin(); it != codes.end(); it++)
-		{
-			if (subStr == it->first)
+			if (key == captureStr.substr(0, key.length()))
 			{
-				decodedStr.replace(posApos, posSem - posApos + 1, it->second);
+				decodedStr += value;
+				offset = key.length();
+				found = true;
 				break;
 			}
 		}
-		posApos = decodedStr.find("&", posApos + 1);
+		if (!found)
+		{
+			decodedStr += '&';
+		}
+		prevPos = newPos + offset;
+		newPos = html.find('&', prevPos);
 	}
+	decodedStr += html.substr(prevPos);
 	return decodedStr;
 }
 

@@ -3,79 +3,61 @@
 #include <sstream>
 #include <vector>
 #include <iomanip>
+#include <algorithm>
+#include <iterator>
 
 using namespace std;
 
-double getNumber(const string &str)
-{
-	size_t end;
-	double val;
-	try
-	{
-		val = std::stold(str, &end);
-	}
-	catch (const std::exception& ex)
-	{
-		throw std::invalid_argument("Not a number\n");
-	}
-	return val;
-}
-
-std::vector<double> getVector(istream& input)
+std::vector<double> GetVector(istream& input)
 {
 	string str;
 	string subStr;
 	getline(input, str);
 	istringstream strm(str);
 	vector<double> array;
-	while (strm >> subStr)
+	double num;
+	while (strm >> num)
 	{
-		double num = getNumber(subStr);
 		array.push_back(num);
+	}
+	if (!strm.eof())
+	{
+		throw std::invalid_argument("Not a number\n");
 	}
 	return array;
 }
 
-double getAverage(const std::vector<double>& array)
+double GetAverageEvens(const std::vector<double>& array)
 {
 	unsigned int count = 0;
 	double totalSum = 0;
-	std::vector<double>::const_iterator it;
-	for (it = array.begin(); it != array.end(); ++it)
+	for (double val: array)
 	{
-		double dividedNum = *it / 2;
-		double wholePart, fractPart;
-		fractPart = std::modf(dividedNum, &wholePart);
-		if (fractPart == 0.0f)
+		if (std::fmod(val, 2) == 0)
 		{
-			totalSum += *it;
-			count++;
+			totalSum += val;
+			++count;
 		}
 	}
+	double ave = totalSum / count;
+	std::cout << ave << std::endl;
 	return totalSum / count;
 }
 
-void multiplyElements(std::vector<double>& array)
+void MultiplyElements(std::vector<double>& array)
 {
-	double average = getAverage(array);
-	std::vector<double>::iterator it;
-	for (it = array.begin(); it != array.end(); ++it)
-	{
-		double dividedNum = *it / 3;
-		int whole = (int)dividedNum;
-		double fractPart = dividedNum - whole;
-		if (fractPart == 0.0f)
+	double average = GetAverageEvens(array);
+	std::transform(begin(array), end(array), begin(array),
+		[average](double number)
 		{
-			*it *= average;
+			return std::fmod(number, 3) == 0 ? number *= average : number;
 		}
-	}
+	);
 }
 
-void printVector(ostream& output, const std::vector<double>& array)
+void PrintVector(ostream& output, const std::vector<double>& array)
 {
-	std::vector<double>::const_iterator it;
-	for (it = array.begin(); it != array.end(); ++it)
-	{
-		output << fixed << setprecision(3) << fixed << *it << " ";
-	}
+	output.setf(std::ios::fixed);
+	output.precision(3);
+	std::copy(array.begin(), array.end(), ostream_iterator<double>(output, " "));
 }

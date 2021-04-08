@@ -4,8 +4,6 @@ The Red Square
 Красная Площадь
 cat
 кот, кошка
-computer
-компьютер
 day
 день
 dog
@@ -18,8 +16,6 @@ hello
 Привет
 home
 дом
-letter
-письмо
 road
 дорога
 russian language

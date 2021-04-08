@@ -2,8 +2,8 @@
 #include <iostream>
 #include <vector>
 
-std::vector<double> getVector(std::istream& input);
+std::vector<double> GetVector(std::istream& input);
 
-void multiplyElements(std::vector<double>& array);
+void MultiplyElements(std::vector<double>& array);
 
-void printVector(std::ostream &output, const std::vector<double>& array);
+void PrintVector(std::ostream &output, const std::vector<double>& array);

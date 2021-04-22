@@ -39,8 +39,7 @@ double GetAverageEvens(const std::vector<double>& array)
 			++count;
 		}
 	}
-	double ave = totalSum / count;
-	std::cout << ave << std::endl;
+	double avg = totalSum / count;
 	return totalSum / count;
 }
 
@@ -50,7 +49,7 @@ void MultiplyElements(std::vector<double>& array)
 	std::transform(begin(array), end(array), begin(array),
 		[average](double number)
 		{
-			return std::fmod(number, 3) == 0 ? number *= average : number;
+			return std::fmod(number, 3) == 0 ? number * average : number;
 		}
 	);
 }

@@ -159,8 +159,8 @@ void Inquire(std::istream& input, std::ostream& output, std::map <std::string, s
 		}
 		else if (!word.empty())
 		{
-			std::map<std::string, std::string>::iterator it;
-			it = dictionary.find(word);
+			// std::map<std::string, std::string>::iterator it;
+			auto it = dictionary.find(word);
 			if (it == dictionary.end())
 			{
 				AddNewWord(input, output, dictionary, word, wasChanged);

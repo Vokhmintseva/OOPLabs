@@ -1,26 +1,46 @@
-#define CATCH_CONFIG_MAIN
-#include "../../../catch.hpp"
+﻿#define CATCH_CONFIG_MAIN
+#include "../../../../catch.hpp"
 #include <iostream>
 #include <string>
-#include "../Car/Car.h"
-#include "../Car/CarHandler.h"
+#include <optional>
+#include "../Calculator/Calculator.h"
+#include "../Calculator/RemoteControl.h"
+#include "../Calculator/Countable.h"
+#include "../Calculator/FunctionExpression.h"
+#include "../Calculator/FunctionIdentifier.h"
+#include "../Calculator/Variable.h"
 
-SCENARIO("car") {
+SCENARIO("calculator test") {
 
-    GIVEN("car") {
-        
-        Car car;
-       
-        THEN("State after initialization") {
-            REQUIRE(car.IsTurnedOn() == false);
-            Car::Direction dir = car.GetDirection();
-            std::string dirStr = CarHandler::GetDirection(dir);
-            REQUIRE(dirStr == "static");
-            REQUIRE(car.GetSpeed() == 0);
-            REQUIRE(car.GetGear() == 0);
+    GIVEN("calculator") {
+
+        Calculator calculator;
+
+        THEN("declare variables") {
+            REQUIRE(calculator.DeclareVariable("Abc") == true);
+            REQUIRE(calculator.DeclareVariable("1Abc") == false);
+            REQUIRE(calculator.DeclareVariable("A123") == true);
+            REQUIRE(calculator.DeclareVariable("A123_") == true);
+            REQUIRE(calculator.DeclareVariable("A123") == false);
+            REQUIRE(calculator.DeclareVariable("A__12") == true);
+            
+            AND_THEN("declare functions") {
+                REQUIRE(calculator.DeclareFunction("A__12", "a-b") == false);
+                REQUIRE(calculator.DeclareFunction("func", "Abc+A12") == false);
+                REQUIRE(calculator.DeclareFunction("func", "Abc+A123") == true);
+                REQUIRE(calculator.DeclareFunction("func2", "A123") == true);
+                REQUIRE(calculator.DeclareFunction("func2", "A123_+A123") == false);
+
+                AND_THEN("setting values") {
+                    REQUIRE(calculator.SetVariableValue("A123", "5") == true);
+                    REQUIRE(calculator.SetVariableValue("A123", "258") == true);
+                    REQUIRE(calculator.SetVariableValue("A123", "A__12") == true);
+                }
+            }
         }
-        
-        WHEN("turning engine on") {
+
+
+        /*WHEN("turning engine on") {
             car.TurnOnEngine();
 
             THEN("engine is turned on") {
@@ -163,6 +183,29 @@ SCENARIO("car") {
                     }
                 }
             }
+        }*/
+    }
+}
+
+SCENARIO("RemoteControl test") {
+
+    GIVEN("remote control") {
+        Calculator calc;
+        std::string inputStr = "var x\nprint x\nlet x=1.234\nlet x=1.234\nprint x\nlet y=x\nlet x=99\nprintvars\n";
+        std::istringstream input(inputStr);
+        std::ostringstream output;
+        RemoteControl remoteControl(calc, input, output);
+        remoteControl.HandleCommand();
+        THEN("") {
+            /*std::optional<double> val = calc.CountValue("x");
+            if (val) {
+                bool isEquial = val.value() != std::numeric_limits<double>::quiet_NaN();
+                CHECK(isEquial == true);
+            }*/
+            
+        }
+        AND_WHEN("") {
+
         }
     }
 }

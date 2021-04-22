@@ -7,17 +7,27 @@ class Car
 public:
 	Car();
 	
+	enum class Direction
+	{
+		Static,
+		Forward,
+		Backward,
+	};
+
     bool TurnOnEngine();
 	bool TurnOffEngine();
 	bool SetGear(int newGear);
 	bool SetSpeed(int newSpeed);
 
 	bool IsTurnedOn() const;
-	std::string GetDirection() const;
+	Direction GetDirection() const;
 	unsigned int GetSpeed() const;
 	int GetGear() const;
-	std::string GetGearErrorReason() const;
-	std::string GetSpeedErrorReason() const;
+	const std::string& GetErrorReason() const &;
+	std::string GetErrorReason() &&
+	{
+		return std::move(m_errorReason);
+	}
 	
 private:
 	enum class Gear
@@ -30,24 +40,13 @@ private:
 		Four = 4,
 		Five = 5,
 	};
-	
+
 	struct SpeedLimits
 	{
 		int Min;
 		int Max;
 	};
 
-	/*const std::map<int, Car::Gear> gears =
-	{
-		{-1, Car::Gear::Reverse},
-		{0, Car::Gear::Neutral},
-		{1, Car::Gear::One},
-		{2, Car::Gear::Two},
-		{3, Car::Gear::Three},
-		{4, Car::Gear::Four},
-		{5, Car::Gear::Five}
-	};*/
-	
 	const std::map<Car::Gear, SpeedLimits> speedLimits =
 	{
 		{Car::Gear::Reverse, {-20, 0}},
@@ -59,12 +58,27 @@ private:
 		{Car::Gear::Five, {50, 150}}
 	};
 
-	bool CanSwitchGear(Car::Gear newGear);
-	bool CanSetSpeed(int newSpead);
+	bool CanSwitchGear(Car::Gear newGear); // Имя функции не подразумевает, что она будет менять состояние объекта
+	bool CanSetSpeed(int newSpead); 
 	
 	bool m_isTurnedOn;
 	int m_speed;
 	Car::Gear m_gear;
-	std::string m_gearErrorReason;
-	std::string m_speedErrorReason;
+	std::string m_errorReason;
 };
+
+/*
+
+Car MakeCar();
+
+int m()
+{
+	string errorReason = MakeCar().GetErrorReason(); // Error reason will be moved
+	Car c;
+	const string& errorReason1 = c.GetErrorReason(); // Error reason will be copied
+
+	const string& errorReason2 = MakeCar().GetErrorReason(); // Время жизни возвращённого временного объекта будет продлено до конца блока
+
+}
+
+*/

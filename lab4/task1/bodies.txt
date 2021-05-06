@@ -1,0 +1,9 @@
+sphere 2700 22.54
+compound
+parallelepiped 1800 32.67 15.8 27.99
+compound
+cone 700.5 0.5 15
+cylinder 240 18.2 25
+endCompaund
+endCompaund
+

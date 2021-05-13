@@ -20,13 +20,13 @@ WorkSpace::WorkSpace(std::istream& input, std::ostream& output)
 
 bool WorkSpace::Info(std::istream& args)
 {
-	m_output << "sphere <density> <volume>\n";
-	m_output << "cylinder <density> <volume> <height>\n";
-	m_output << "parallelepiped <density> <volume> <width> <height>\n";
-	m_output << "cone <density> <volume> <height>\n\n";
+	m_output << "sphere <density> <radius>\n";
+	m_output << "cylinder <density> <base_radius> <height>\n";
+	m_output << "parallelepiped <density> <width> <height> <depth>\n";
+	m_output << "cone <density> <base_radius> <height>\n\n";
 	m_output << "compound\n";
-	m_output << "sphere <density> <volume>\n";
-	m_output << "cylinder <density> <volume> <height>\n";
+	m_output << "sphere <density> <radius>\n";
+	m_output << "cylinder <density> <base_radius> <height>\n";
 	m_output << "endCompound\n";
 	return true;
 }
@@ -73,9 +73,10 @@ std::optional<std::vector<double>> ParseArgs(std::istream& args)
 void WorkSpace::PrintBodiesInfo()
 {
 	std::string infoTotal = "";
-	std::for_each(m_bodies.rbegin(), m_bodies.rend(), [&](auto& child) 
+	int level = 0;
+	std::for_each(m_bodies.rbegin(), m_bodies.rend(), [level, &infoTotal](auto& child)
 		{ 
-			infoTotal += child->ToString() + '\n';
+			infoTotal += child->ToString(level) + '\n';
 		}
 	);
 	m_output << infoTotal;
@@ -88,7 +89,7 @@ void WorkSpace::PrintMaxMassBody() const
 		return body1->GetMass() < body2->GetMass();
 	};
 	auto maxWeightBody = std::max_element(m_bodies.cbegin(), m_bodies.cend(), CompareWeight);
-	m_output << "THE BODY WITH THE BIGGEST MASS IS:\n" << (*maxWeightBody)->ToString();
+	m_output << "THE BODY WITH THE BIGGEST MASS IS:\n" << (*maxWeightBody)->ToString(0);
 }
 
 void WorkSpace::PrintBodyWithLeastWeightInWater() const
@@ -100,7 +101,7 @@ void WorkSpace::PrintBodyWithLeastWeightInWater() const
 		return (body1->GetDensity() - waterDensity) * body1->GetMass() * gravity < (body2->GetDensity() - waterDensity)* body2->GetMass()* gravity;
 	};
 	auto body = std::min_element(m_bodies.cbegin(), m_bodies.cend(), CompareWeigtInWater);
-	m_output << "THE BODY WITH THE LEAST WEIGHT IN WATER IS:\n" << (*body)->ToString();
+	m_output << "THE BODY WITH THE LEAST WEIGHT IN WATER IS:\n" << (*body)->ToString(0);
 }
 
 bool WorkSpace::AddSphere(std::istream& input)
@@ -122,8 +123,8 @@ bool WorkSpace::AddSphere(std::istream& input)
 	}
 	else
 	{
-		std::shared_ptr<Compound> it = m_compounds.back();
-		it->AddChildBody(sphere);
+		std::weak_ptr<Compound> it = m_compounds.back();
+		it.lock()->AddChildBody(sphere);
 	}
 	return true;
 }
@@ -147,8 +148,8 @@ bool WorkSpace::AddParallelepiped(std::istream& input)
 	}
 	else
 	{
-		std::shared_ptr<Compound> it = m_compounds.back();
-		it->AddChildBody(parallelepiped);
+		std::weak_ptr<Compound> it = m_compounds.back();
+		it.lock()->AddChildBody(parallelepiped);
 	}
 	return true;
 }
@@ -172,8 +173,8 @@ bool WorkSpace::AddCone(std::istream& input)
 	}
 	else
 	{
-		std::shared_ptr<Compound> it = m_compounds.back();
-		it->AddChildBody(cone);
+		std::weak_ptr<Compound> it = m_compounds.back();
+		it.lock()->AddChildBody(cone);
 	}
 	return true;
 }
@@ -197,8 +198,8 @@ bool WorkSpace::AddCylinder(std::istream& input)
 	}
 	else
 	{
-		std::shared_ptr<Compound> it = m_compounds.back();
-		it->AddChildBody(cylinder);
+		std::weak_ptr<Compound> it = m_compounds.back();
+		it.lock()->AddChildBody(cylinder);
 	}
 	return true;
 }
@@ -222,8 +223,8 @@ bool WorkSpace::AddCompound(std::istream& input)
 	}
 	else
 	{
-		std::shared_ptr<Compound> it = m_compounds.back();
-		it->AddChildBody(compound);
+		std::weak_ptr<Compound> it = m_compounds.back();
+		it.lock()->AddChildBody(compound);
 	}
 	m_compounds.push_back(compound);
 	return true;

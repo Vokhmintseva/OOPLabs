@@ -22,4 +22,7 @@
 #include <optional>
 #include <vector>
 #include <map>
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 #endif //PCH_H

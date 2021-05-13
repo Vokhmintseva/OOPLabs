@@ -3,19 +3,10 @@
 class Body
 {
 public:
-	explicit Body(double density, double volume);
-	
-	enum class BodyType {Sphere, Parallelepiped, Cone, Cylinder, Compound};
-	virtual double GetDensity() const;
-	virtual double GetVolume() const;
-	virtual double GetMass() const;
-	virtual std::string ToString() const;
-	virtual std::string GetName() const;
+	virtual double GetDensity() const = 0;
+	virtual double GetVolume() const = 0;
+	virtual double GetMass() const = 0;
+	virtual std::string GetName() const = 0;
+	virtual std::string ToString(int level) const;
 	virtual ~Body() = default;
-
-private:
-	double m_density;
-	double m_volume;
-	double m_mass;
 };
-

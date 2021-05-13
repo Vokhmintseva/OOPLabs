@@ -1,17 +1,17 @@
 #pragma once
-#include "Body.h"
+#include "SolidBody.h"
+
 class Cone :
-    public Body
+    public SolidBody
 {
 public:
-    Cone(double density, double volume, double height);
-    static Body::BodyType GetType();
+    Cone(double density, double baseRadius, double height);
+    std::string GetName() const override;
+    std::string ToString(int level) const override;
+    double GetVolume() const override;
     double GetHeight() const;
     double GetBaseRadius() const;
-    std::string GetName() const override;
-    std::string ToString() const override;
 private:
-    double m_height;
     double m_baseRadius;
+    double m_height;
 };
-

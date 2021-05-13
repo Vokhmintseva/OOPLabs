@@ -4,6 +4,14 @@ parallelepiped 1800 32.67 15.8 27.99
 compound
 cone 700.5 0.5 15
 cylinder 240 18.2 25
-endCompaund
-endCompaund
+endCompound
+endCompound
 
+compound
+sphere 22.54 1.57
+cylinder 18.47 0.69 10.87
+compound
+cone 25.39 2.09 2.57
+parallelepiped 77.85 26.87 1.59 2.47
+endCompound
+endCompound

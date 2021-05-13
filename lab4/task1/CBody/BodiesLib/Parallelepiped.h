@@ -1,17 +1,17 @@
 #pragma once
-#include "Body.h"
+#include "SolidBody.h"
 
 class Parallelepiped :
-    public Body
+    public SolidBody
 {
 public:
-    Parallelepiped(double density, double volume, double width, double height);
-    static Body::BodyType GetType();
+    Parallelepiped(double density, double width, double height, double depth);
+    std::string GetName() const override;
+    std::string ToString(int level) const override;
+    double GetVolume() const override;
     double GetWidth() const;
     double GetHeight() const;
     double GetDepth() const;
-    std::string GetName() const override;
-    std::string ToString() const override;
 private:
     double m_width;
     double m_height;

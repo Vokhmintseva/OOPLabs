@@ -31,6 +31,5 @@ private:
 	std::ostream& m_output;
 
 	std::vector<std::shared_ptr<Body>> m_bodies;
-	std::vector<std::shared_ptr<Compound>> m_compounds;
+	std::vector<std::weak_ptr<Compound>> m_compounds;
 };
-

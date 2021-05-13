@@ -6,22 +6,21 @@
 #include "Cone.h"
 #include "Body.h"
 #include "Compound.h"
-#include "BodyNameResolver.h"
 
 class Compound :
-    public Body
+    public Body,
+    public std::enable_shared_from_this<Compound>
 {
-public:    
-    Compound();
-    static Body::BodyType GetType();
+public:
     double GetDensity() const override;
     double GetVolume() const override;
     double GetMass() const override;
     std::string GetName() const override;
-    std::string ToString() const override;
-    bool AddChildBody(std::shared_ptr<Body> child);
-    
+    std::string ToString(int level) const override;
+    bool AddChildBody(std::shared_ptr<Body> childPtr);
 private:
+    std::weak_ptr<Body> GetParentPtr() const;
+    void SetParentPtr(std::shared_ptr<Body> parentPtr);
     std::vector<std::shared_ptr<Body>> m_childs;
+    std::weak_ptr<Body> m_parent_ptr;
 };
-

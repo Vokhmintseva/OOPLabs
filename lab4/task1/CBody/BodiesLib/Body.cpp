@@ -1,40 +1,15 @@
 #include "pch.h"
 #include "Body.h"
 
-Body::Body(double density, double volume)
-	: m_density(density)
-	, m_volume(volume)
+std::string Body::ToString(int level) const
 {
-	m_mass = density * volume;
-};
-
-std::string Body::GetName() const
-{
-	return "Body";
-}
-
-double Body::GetDensity() const
-{
-	return m_density;
-}
-
-double Body::GetVolume() const
-{
-	return m_volume;
-}
-
-double Body::GetMass() const
-{
-	return m_mass;
-}
-
-std::string Body::ToString() const
-{
+	std::string shift;
+	shift.insert(0, " ", level);
 	std::ostringstream info;
 	info << std::fixed << std::setprecision(2);
-	info << GetName() << '\n';
-	info << "Density: " << GetDensity() << '\n';
-	info << "Volume: " << GetVolume() << '\n';
-	info << "Mass: " << GetMass() << '\n';
+	info << shift << GetName() << '\n';
+	info << shift << "Density: " << GetDensity() << '\n';
+	info << shift << "Volume: " << GetVolume() << '\n';
+	info << shift << "Mass: " << GetMass() << '\n';
 	return info.str();
 }

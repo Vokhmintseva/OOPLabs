@@ -1,15 +1,15 @@
 #pragma once
-#include "Body.h"
+#include "SolidBody.h"
 
 class Sphere :
-    public Body
+    public SolidBody
 {
 public:
-    Sphere(double density, double volume);
-    static Body::BodyType GetType();
-    double GetRadius() const;
+    Sphere(double density, double radius);
+    double GetVolume() const override;
     std::string GetName() const override;
-    std::string ToString() const override;
+    std::string ToString(int level) const override;
+    double GetRadius() const;
 private:
     double m_radius;
 };

@@ -1,16 +1,12 @@
 #include "pch.h"
 #include "Parallelepiped.h"
 
-Parallelepiped::Parallelepiped(double density, double volume, double width, double height)
-	: Body(density, volume)
+Parallelepiped::Parallelepiped(double density, double width, double height, double depth)
+	: SolidBody(density)
 	, m_width(width)
 	, m_height(height)
-	, m_depth(volume / width / height)
-{}
-
-Body::BodyType Parallelepiped::GetType()
+	, m_depth(depth)
 {
-	return Body::BodyType::Parallelepiped;
 }
 
 std::string Parallelepiped::GetName() const
@@ -33,14 +29,21 @@ double Parallelepiped::GetDepth() const
 	return m_depth;
 }
 
-std::string Parallelepiped::ToString() const
+double Parallelepiped::GetVolume() const
 {
-	std::string baseInfo = Body::ToString();
+	return m_width * m_height * m_depth;
+}
+
+std::string Parallelepiped::ToString(int level) const
+{
+	std::string baseInfo = Body::ToString(level);
 	std::ostringstream info;
+	std::string shift;
+	shift.insert(0, " ", level);
 	info << std::fixed << std::setprecision(2);
-	info << "Width: " << GetWidth() << "\n";
-	info << "Height: " << GetHeight() << "\n";
-	info << "Depth: " << GetDepth() << "\n";
+	info << shift << "Width: " << GetWidth() << "\n";
+	info << shift << "Height: " << GetHeight() << "\n";
+	info << shift << "Depth: " << GetDepth() << "\n";
 	std::string infoStr = info.str();
 	return std::move(baseInfo.append(std::move(infoStr)));
 }

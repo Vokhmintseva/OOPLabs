@@ -21,9 +21,6 @@
     <ClInclude Include="Body.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="BodyNameResolver.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="Compound.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -51,9 +48,6 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Body.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="BodyNameResolver.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Compound.cpp">

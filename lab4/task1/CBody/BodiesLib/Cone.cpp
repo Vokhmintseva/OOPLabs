@@ -1,17 +1,11 @@
 #include "pch.h"
 #include "Cone.h"
-#define _USE_MATH_DEFINES
-#include <math.h>
 
-Cone::Cone(double density, double volume, double height)
-	: Body(density, volume)
+Cone::Cone(double density, double radius, double height)
+	: SolidBody(density)
+	, m_baseRadius(radius)
 	, m_height(height)
-	, m_baseRadius(std::sqrt((3.0 * volume) / (M_PI * height)))
-{}
-
-Body::BodyType Cone::GetType()
 {
-	return Body::BodyType::Cone;
 }
 
 std::string Cone::GetName() const
@@ -24,18 +18,25 @@ double Cone::GetHeight() const
 	return m_height;
 }
 
+double Cone::GetVolume() const
+{
+	return M_PI * pow(m_baseRadius, 2) * m_height / 3;
+}
+
 double Cone::GetBaseRadius() const
 {
 	return m_baseRadius;
 }
 
-std::string Cone::ToString() const
+std::string Cone::ToString(int level) const
 {
-	std::string baseInfo = Body::ToString();
+	std::string baseInfo = Body::ToString(level);
 	std::ostringstream info;
+	std::string shift;
+	shift.insert(0, " ", level);
 	info << std::fixed << std::setprecision(2);
-	info << "Height: " << GetHeight() << "\n";
-	info << "BaseRadius: " << GetBaseRadius() << "\n";
+	info << shift << "Height: " << GetHeight() << "\n";
+	info << shift << "BaseRadius: " << GetBaseRadius() << "\n";
 	std::string infoStr = info.str();
 	return std::move(baseInfo.append(std::move(infoStr)));
 }

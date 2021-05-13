@@ -4,7 +4,7 @@
 
 int main()
 {
-	WorkSpace workSpace(std::cin, std::cout);
+	WorkSpace workSpace(std:: cin, std::cout);
 	std::string command;
 	while (!std::cin.eof() && !std::cin.fail())
 	{

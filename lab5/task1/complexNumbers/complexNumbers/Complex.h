@@ -1,5 +1,13 @@
 #pragma once
 #include <iostream>
+#define _USE_MATH_DEFINES
+#include <math.h>
+#include <float.h>
+#include <limits>
+#include <stdexcept>
+#include <string>
+#include <sstream> 
+#include <iomanip>
 
 class Complex
 {

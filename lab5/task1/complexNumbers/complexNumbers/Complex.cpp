@@ -1,13 +1,4 @@
 #include "Complex.h"
-#define _USE_MATH_DEFINES
-#include <math.h>
-#include <float.h>
-#include <limits>
-#include <stdexcept>
-#include <iostream>
-#include <string>
-#include <sstream> 
-#include <iomanip>
 
 Complex::Complex(double real, double image)
 	: m_real(real)

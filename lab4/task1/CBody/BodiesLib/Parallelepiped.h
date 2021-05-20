@@ -1,7 +1,7 @@
 #pragma once
 #include "SolidBody.h"
 
-class Parallelepiped :
+class Parallelepiped final :
     public SolidBody
 {
 public:
@@ -17,4 +17,3 @@ private:
     double m_height;
     double m_depth;
 };
-

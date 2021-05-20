@@ -14,7 +14,51 @@ void CheckNumberOfArgs(int argc)
 	}
 }
 
-void ReadDictionaryFromFile(std::map<std::string, std::string> &dictionary, std::ifstream &file)
+void SaveDictionary(std::istream& input, std::ostream& output, Dictionary& dictionary, std::fstream& file)
+{
+	if (dictionary.WasChanged)
+	{
+		if (ShouldSaveDictionary(std::cin, std::cout))
+		{
+			if (dictionary.Name.empty())
+			{
+				dictionary.Name = GetDictionaryFileName(std::cin, std::cout);
+			}
+			if (!dictionary.Name.empty())
+			{
+				file.open(dictionary.Name, std::fstream::out);
+				if (!file.is_open())
+				{
+					std::ofstream outputFile(dictionary.Name);
+				}
+				WriteDictionary(dictionary, file);
+			}
+		}
+	}
+}
+
+bool ShouldSaveDictionary(std::istream& input, std::ostream& output)
+{
+	output << "The dictionary has been changed. Enter Y or y to save changes or N or n not to save them\n";
+	std::string str;
+	bool shouldSave = false;
+	while (std::getline(input, str))
+	{
+		if (str == "N" || str == "n")
+		{
+			break;
+		}
+		else if (str == "Y" || str == "y")
+		{
+			shouldSave = true;
+			break;
+		}
+		output << "Enter Y or y to save changes or N or n not to save them.\n";
+	}
+	return shouldSave;
+}
+
+void ReadDictionary(Dictionary& dictionary, std::istream& file)
 {
 	Entry entry;
 	while (std::getline(file, entry.word))
@@ -24,86 +68,32 @@ void ReadDictionaryFromFile(std::map<std::string, std::string> &dictionary, std:
 		{
 			throw std::runtime_error("Incorrect data in the file");
 		}
-		dictionary.insert(make_pair(entry.word, entry.translation));
+		dictionary.Vocabulary.emplace(make_pair(entry.word, entry.translation));
 	}
-}
-
-std::map <std::string, std::string> GetDictionaryMap(std::string fileName)
-{
-	std::map<std::string, std::string> dictionary;
-	if (!fileName.empty())
-	{
-		std::ifstream file(fileName);
-		if (!file.is_open())
-		{
-			throw std::runtime_error("Could not open file");
-		}
-		ReadDictionaryFromFile(dictionary, file);
-	}
-	return dictionary;
 }
 
 std::string GetDictionaryFileName(std::istream& input, std::ostream& output)
 {
-	output << "Enter the name of the dictionary file. Enter empty string to miss\n";
+	output << "Enter the name of the dictionary file in format filename.txt or empty string to miss\n";
 	std::string name;
 	if (std::getline(input, name))
 	{
-		return (!name.empty()) ? name : "";
+		return (!name.empty()) ? std::move(name) : "";
 	}
 	return "";
 }
 
-void SaveDictionaryToFile(std::map<std::string, std::string>& dictionary, std::string fileName)
+void WriteDictionary(Dictionary& dictionary, std::ostream& file)
 {
-	std::ofstream outputFile;
-	outputFile.open(fileName);
-	if (!outputFile.is_open())
-	{
-		std::ofstream outputFile(fileName);
-	}
 	std::map<std::string, std::string>::iterator it;
-	for (it = dictionary.begin(); it != dictionary.end(); it++)
+	for (it = dictionary.Vocabulary.begin(); it != dictionary.Vocabulary.end(); it++)
 	{
-		outputFile << it->first << "\n";
-		outputFile << it->second << "\n";
+		file << it->first << "\n";
+		file << it->second << "\n";
 	}
 }
 
-void EndUpProgram(std::istream& input, std::ostream& output, std::map <std::string, std::string>& dictionary, std::string fileName)
-{
-	output << "The dictionary has been changed. Enter Y or y to save changes or N or n not to save them" << "\n";
-	std::string str;
-	while (std::getline(input, str))
-	{
-		if (str == "N" || str == "n")
-		{
-			break;
-		}
-		else if (str == "Y" || str == "y")
-		{
-			if (fileName.empty())
-			{
-				fileName = GetDictionaryFileName(input, output);
-				if (fileName.empty())
-				{
-					break;
-				}
-			}
-			SaveDictionaryToFile(dictionary, fileName);
-			break;
-		}
-		output << "The dictionary has been changed. Enter Y or y to save changes or N or n not to save them\n";
-	}
-}
-
-void AddNewWord(
-	std::istream& input,
-	std::ostream& output,
-	std::map <std::string, std::string>& dictionary,
-	std::string word,
-	bool& wasChanged
-)
+void AddNewWord(std::istream& input, std::ostream& output, Dictionary& dictionary, const std::string& word)
 {
 	output << "Unknown word \"" << word << "\". Enter translation or empty string to reject." << "\n";
 	std::string translation;
@@ -111,64 +101,39 @@ void AddNewWord(
 	{
 		if (!translation.empty())
 		{
-			wasChanged = true;
-			dictionary.insert(make_pair(word, translation));
+			dictionary.WasChanged = true;
+			dictionary.Vocabulary.emplace(make_pair(word, translation));
 			output << "The word \"" << word << "\" has been saved in the dictionary as \"" << translation << "\".\n";
 		}
 	}
 }
 
-void TranslateWord(
-	std::istream& input,
-	std::ostream& output,
-	std::map<std::string, std::string>& dictionary,
-	std::string word,
-	bool &wasChanged
-)
+std::string TranslateWord(Dictionary& dictionary, const std::string& word)
 {
-	std::map<std::string, std::string>::iterator it;
-	it = dictionary.find(word);
-	if (it == dictionary.end())
-	{
-		AddNewWord(input, output, dictionary, word, wasChanged);
-	}
-	else
-	{
-		output << it->second << "\n";
-	}
+	std::string translation = "";
+	translation = dictionary.Vocabulary.at(word);
+	return std::move(translation);
 }
 
-std::string Translate(std::map<std::string, std::string>& dictionary, std::map<std::string, std::string>::iterator it)
-{
-	return it->second;
-}
-
-void Inquire(std::istream& input, std::ostream& output, std::map <std::string, std::string>& dictionary, std::string fileName)
+void Inquire(std::istream& input, std::ostream& output, Dictionary& dictionary)
 {
 	std::string word;
-	bool wasChanged = false;
 	while (std::getline(input, word))
 	{
 		if (word == "...")
 		{
-			if (wasChanged)
-			{
-				EndUpProgram(input, output, dictionary, fileName);
-			}
 			break;
 		}
 		else if (!word.empty())
 		{
-			// std::map<std::string, std::string>::iterator it;
-			auto it = dictionary.find(word);
-			if (it == dictionary.end())
+			if (dictionary.Vocabulary.count(word) == 1)
 			{
-				AddNewWord(input, output, dictionary, word, wasChanged);
+				std::string t = TranslateWord(dictionary, word);
+				output << TranslateWord(dictionary, word) << '\n';
 			}
 			else
 			{
-				std::string translation = Translate(dictionary, it);
-				output << translation << "\n";
+				AddNewWord(input, output, dictionary, word);
 			}
 		}
 	}

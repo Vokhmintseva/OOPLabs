@@ -22,6 +22,7 @@
 #include <optional>
 #include <vector>
 #include <map>
+#include <numeric>
 #define _USE_MATH_DEFINES
 #include <math.h>
 

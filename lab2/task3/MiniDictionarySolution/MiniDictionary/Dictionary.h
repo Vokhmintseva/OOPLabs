@@ -4,20 +4,27 @@
 #include <sstream>
 #include <map>
 
-std::map <std::string, std::string> GetDictionaryMap(std::string fileName);
+using Vocabulary = std::map <std::string, std::string>;
 
-void Inquire(std::istream& input, std::ostream& output, std::map <std::string, std::string>& dictionary, std::string fileName);
+struct Dictionary
+{
+	std::map<std::string, std::string> Vocabulary;
+	std::string Name = "";
+	bool WasChanged = false;
+};
+
+void ReadDictionary(Dictionary& dictionary, std::istream& file);
+
+void Inquire(std::istream& input, std::ostream& output, Dictionary& dictionary);
 
 std::string GetDictionaryFileName(std::istream& input, std::ostream& output);
 
 void CheckNumberOfArgs(int argc);
 
-void TranslateWord(
-	std::istream& input,
-	std::ostream& output,
-	std::map<std::string, std::string>& dictionary,
-	std::string word,
-	bool& wasChanged
-);
+std::string TranslateWord(Dictionary& dictionary, const std::string& word);
 
-void CheckNumberOfArgs(int argc);
+bool ShouldSaveDictionary(std::istream& input, std::ostream& output);
+
+void WriteDictionary(Dictionary& dictionary, std::ostream& file);
+
+void SaveDictionary(std::istream& input, std::ostream& output, Dictionary& dictionary, std::fstream& file);

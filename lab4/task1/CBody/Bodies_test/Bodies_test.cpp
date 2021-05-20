@@ -78,10 +78,11 @@ SCENARIO("bodies creation and getting parameters") {
             compoundPtr->AddChildBody(cylinderPtr);
             
             THEN("getting compound body parameters after child bodies were added") {
-                std::string totalInfo = "Compound\nDensity: 20.50\nVolume: 32.47\nMass: 665.67\nBEGIN_BODIES_IN_COMPOUND:\n  Cylinder\n  Density: 18.47\n  Volume: 16.26\n  Mass: 300.29\n  Height: 10.87\n  BaseRadius: 0.69\n\n  Sphere\n  Density: 22.54\n  Volume: 16.21\n  Mass: 365.38\n  Radius: 1.57\n\nEND_BODIES_IN_COMPOUND\n";
+                std::string totalInfo = "Compound\nDensity: 20.50\nVolume: 32.47\nMass: 665.67\nBEGIN_BODIES_IN_COMPOUND:\n  Sphere\n  Density: 22.54\n  Volume: 16.21\n  Mass: 365.38\n  Radius: 1.57\n\n  Cylinder\n  Density: 18.47\n  Volume: 16.26\n  Mass: 300.29\n  Height: 10.87\n  BaseRadius: 0.69\n\nEND_BODIES_IN_COMPOUND\n";
                 CHECK(compoundPtr->GetDensity() == Approx(20.50).margin(0.01));
                 CHECK(compoundPtr->GetVolume() == Approx(32.47).margin(0.01));
                 CHECK(compoundPtr->GetMass() == Approx(665.67).margin(0.01));
+                CHECK(compoundPtr->ToString(0) == totalInfo);
             }
             AND_WHEN("adding compound to compound") {
                 auto parallelepipedPtr = std::make_shared<Parallelepiped>(parallelepiped);
@@ -96,6 +97,14 @@ SCENARIO("bodies creation and getting parameters") {
                     CHECK(compoundPtr->GetDensity() == Approx(61.29).margin(0.01));
                     CHECK(compoundPtr->GetVolume() == Approx(149.76).margin(0.01));
                     CHECK(compoundPtr->GetMass() == Approx(9179.39).margin(0.01));
+                    std::string p1 = "Compound\nDensity: 61.30\nVolume: 149.75\nMass: 9179.39\n";
+                    std::string p2 = "BEGIN_BODIES_IN_COMPOUND:\n  Sphere\n  Density: 22.54\n  Volume: 16.21\n  Mass: 365.38\n  Radius: 1.57\n\n";
+                    std::string p3 = "  Cylinder\n  Density: 18.47\n  Volume: 16.26\n  Mass: 300.29\n  Height: 10.87\n  BaseRadius: 0.69\n\n";
+                    std::string p4 = "  Compound\n  Density: 72.59\n  Volume: 117.28\n  Mass: 8513.72\n";
+                    std::string p5 = "  BEGIN_BODIES_IN_COMPOUND:\n    Parallelepiped\n    Density: 77.85\n    Volume: 105.53\n    Mass: 8215.24\n    Width: 26.87\n    Height: 1.59\n    Depth: 2.47\n\n";
+                    std::string p6 = "    Cone\n    Density: 25.39\n    Volume: 11.76\n    Mass: 298.48\n    Height: 2.57\n    BaseRadius: 2.09\n\n  END_BODIES_IN_COMPOUND\n\nEND_BODIES_IN_COMPOUND\n";
+                    std::string expectedStr = p1 + p2 + p3 + p4 + p5 + p6;
+                    CHECK(compoundPtr->ToString(0) == expectedStr);
                 }
                 AND_WHEN("adding compound to the same compound directly and indirectly") {
                     Compound compound3;
@@ -108,6 +117,14 @@ SCENARIO("bodies creation and getting parameters") {
                         CHECK(compound3Ptr->AddChildBody(compoundPtr) == false);
                     }
                 }
+                AND_WHEN("adding compound, that is already nested, to another compound") {
+                    Compound compound4;
+                    auto compound4Ptr = std::make_shared<Compound>(compound4);
+
+                    THEN ("adding compound, that is already nested, to another compound causes fail") {
+                        REQUIRE(compound4Ptr->AddChildBody(compound2Ptr) == false);
+                    }
+                }
             }
         }
     }
@@ -115,10 +132,11 @@ SCENARIO("bodies creation and getting parameters") {
 
 TEST_CASE("Wrong arguments for cone given")
 {
-    std::string input = "cone 5 10 20 40\ncone 0 10 20\ncone 5 0 20\ncone 5 10 0\ncone -5 10 20\ncone 5 10";
+    std::string input = "cone 5 10 20 40\ncone 0 10 20\ncone 5 0 20\ncone 5 10 0\ncone -5 10 20\ncone 5 10\ncone a 10 20\n";
     std::istringstream in(input);
     std::ostringstream out;
     WorkSpace workSpace(in, out);
+    CHECK(workSpace.HandleCommand() == false);
     CHECK(workSpace.HandleCommand() == false);
     CHECK(workSpace.HandleCommand() == false);
     CHECK(workSpace.HandleCommand() == false);
@@ -129,10 +147,11 @@ TEST_CASE("Wrong arguments for cone given")
 
 TEST_CASE("Wrong arguments for cylinder given")
 {
-    std::string input = "cylinder 5 10 20 40\ncylinder 0 10 20\ncylinder 5 0 20\ncylinder 5 10 0\ncylinder -5 10 20\ncylinder 5 10\n";
+    std::string input = "cylinder 5 10 20 40\ncylinder 0 10 20\ncylinder 5 0 20\ncylinder 5 10 0\ncylinder -5 10 20\ncylinder 5 10\ncylinder 5 10 15b\n";
     std::istringstream in(input);
     std::ostringstream out;
     WorkSpace workSpace(in, out);
+    CHECK(workSpace.HandleCommand() == false);
     CHECK(workSpace.HandleCommand() == false);
     CHECK(workSpace.HandleCommand() == false);
     CHECK(workSpace.HandleCommand() == false);
@@ -143,10 +162,12 @@ TEST_CASE("Wrong arguments for cylinder given")
 
 TEST_CASE("Wrong arguments for sphere given")
 {
-    std::string input = "sphere 5 10 20\nsphere 0 10\nsphere 5 0\nsphere -5 10\nsphere 5 10 20\n";
+    std::string input = "sphere 5 10 20\nsphere 0 10\nsphere 5 0\nsphere -5 10\nsphere 5 10 20\nsphere 5a 20\nsphere 5 20b\n";
     std::istringstream in(input);
     std::ostringstream out;
     WorkSpace workSpace(in, out);
+    CHECK(workSpace.HandleCommand() == false);
+    CHECK(workSpace.HandleCommand() == false);
     CHECK(workSpace.HandleCommand() == false);
     CHECK(workSpace.HandleCommand() == false);
     CHECK(workSpace.HandleCommand() == false);
@@ -156,7 +177,7 @@ TEST_CASE("Wrong arguments for sphere given")
 
 TEST_CASE("Wrong arguments for parallelepiped given")
 {
-    std::string input = "parallelepiped 5 10 20 40 50\nparallelepiped 0 10 20 30\nparallelepiped 5 0 20 30\nparallelepiped 5 10 0 30\nparallelepiped -5 10 20 30\nparallelepiped 5 10 20 40 50 60\n";
+    std::string input = "parallelepiped 5 10 20 40 50\nparallelepiped 0 10 20 30\nparallelepiped 5 0 20 30\nparallelepiped 5 10 0 30\nparallelepiped -5 10 20 30\nparallelepiped 5 10 20 40 50 60\nparallelepiped 5 10 c 30\n";
     std::istringstream in(input);
     std::ostringstream out;
     WorkSpace workSpace(in, out);
@@ -166,14 +187,15 @@ TEST_CASE("Wrong arguments for parallelepiped given")
     CHECK(workSpace.HandleCommand() == false);
     CHECK(workSpace.HandleCommand() == false);
     CHECK(workSpace.HandleCommand() == false);
+    CHECK(workSpace.HandleCommand() == false);
 }
 
-TEST_CASE("check parallelepiped")
+TEST_CASE("check MaxWeightInWater and MaxMass functions")
 {
     Parallelepiped parallelepiped1(997, 10, 10, 10);
     Parallelepiped parallelepiped2(1.2754, 100, 100, 100);
     std::string input = "parallelepiped 997 10 10 10\nparallelepiped 1.2754 100 100 100\n";
-    std::string info = "Parallelepiped\nDensity: 1.28\nVolume: 1000000.00\nMass: 1275400.00\nWidth: 100.00\nHeight: 100.00\nDepth: 100.00\n\nParallelepiped\nDensity: 997.00\nVolume: 1000.00\nMass: 997000.00\nWidth: 10.00\nHeight: 10.00\nDepth: 10.00\n\n";
+    std::string info = "Parallelepiped\nDensity: 997.00\nVolume: 1000.00\nMass: 997000.00\nWidth: 10.00\nHeight: 10.00\nDepth: 10.00\n\nParallelepiped\nDensity: 1.28\nVolume: 1000000.00\nMass: 1275400.00\nWidth: 100.00\nHeight: 100.00\nDepth: 100.00\n\n";
     std::string maxMass = "THE BODY WITH THE BIGGEST MASS IS:\nParallelepiped\nDensity: 1.28\nVolume: 1000000.00\nMass: 1275400.00\nWidth: 100.00\nHeight: 100.00\nDepth: 100.00\n";
     std::string maxWeight = "THE BODY WITH THE LEAST WEIGHT IN WATER IS:\nParallelepiped\nDensity: 1.28\nVolume: 1000000.00\nMass: 1275400.00\nWidth: 100.00\nHeight: 100.00\nDepth: 100.00\n";
     std::string expectedOutput = info + maxMass + maxWeight;

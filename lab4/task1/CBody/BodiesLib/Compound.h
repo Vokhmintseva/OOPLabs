@@ -7,7 +7,7 @@
 #include "Body.h"
 #include "Compound.h"
 
-class Compound :
+class Compound final:
     public Body,
     public std::enable_shared_from_this<Compound>
 {
@@ -21,6 +21,6 @@ public:
 private:
     std::weak_ptr<Body> GetParentPtr() const;
     void SetParentPtr(std::shared_ptr<Body> parentPtr);
-    std::vector<std::shared_ptr<Body>> m_childs;
+    std::vector<std::shared_ptr<Body>> m_children;
     std::weak_ptr<Body> m_parent_ptr;
 };

@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HTMLDecode", "HTMLDecode\HTMLDecode.vcxproj", "{F29FC86D-30AC-4834-97BC-46128DF8F3C7}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HTMLDecode_test", "..\HTMLDecode_test\HTMLDecode_test.vcxproj", "{C623BBC9-BBAE-497A-A55B-C0335B67821F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{F29FC86D-30AC-4834-97BC-46128DF8F3C7}.Release|x64.Build.0 = Release|x64
 		{F29FC86D-30AC-4834-97BC-46128DF8F3C7}.Release|x86.ActiveCfg = Release|Win32
 		{F29FC86D-30AC-4834-97BC-46128DF8F3C7}.Release|x86.Build.0 = Release|Win32
+		{C623BBC9-BBAE-497A-A55B-C0335B67821F}.Debug|x64.ActiveCfg = Debug|x64
+		{C623BBC9-BBAE-497A-A55B-C0335B67821F}.Debug|x64.Build.0 = Debug|x64
+		{C623BBC9-BBAE-497A-A55B-C0335B67821F}.Debug|x86.ActiveCfg = Debug|Win32
+		{C623BBC9-BBAE-497A-A55B-C0335B67821F}.Debug|x86.Build.0 = Debug|Win32
+		{C623BBC9-BBAE-497A-A55B-C0335B67821F}.Release|x64.ActiveCfg = Release|x64
+		{C623BBC9-BBAE-497A-A55B-C0335B67821F}.Release|x64.Build.0 = Release|x64
+		{C623BBC9-BBAE-497A-A55B-C0335B67821F}.Release|x86.ActiveCfg = Release|Win32
+		{C623BBC9-BBAE-497A-A55B-C0335B67821F}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

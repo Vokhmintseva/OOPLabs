@@ -157,9 +157,188 @@ SCENARIO("car") {
                     car.SetSpeed(30);
                     THEN("the size and capacity change") {
                         REQUIRE(car.IsTurnedOn() == true);
-                        //REQUIRE(car.GetDirection() == "forward");
                         REQUIRE(car.GetSpeed() == 30);
                         REQUIRE(car.GetGear() == 1);
+                    }
+                }
+            }
+        }
+    }
+}
+
+SCENARIO("CarHandler test") {
+
+    GIVEN("carHandler") {
+        Car car;
+        std::istringstream input;
+        std::ostringstream output;
+        CarHandler carHandler(car, input, output);
+
+        WHEN("giving Info command") {
+            input.str("Info\n");
+            carHandler.HandleCommand();
+            
+            THEN("info is shown") {
+                CHECK(output.str() == "The Engine is turned off.\nDirection is static.\nSpeed is 0.\nGear is 0.\n");
+            }
+            AND_WHEN("giving EngineOn command") {
+                input.str("EngineOn\n");
+                output.str("");
+                carHandler.HandleCommand();
+
+                THEN("the engine was turned on") {
+                    CHECK(output.str() == "Car's engine has been turned on.\n");
+                }
+
+                AND_WHEN("giving command SetGear") {
+                    input.str("SetGear 1\n");
+                    output.str("");
+                    carHandler.HandleCommand();
+
+                    THEN("the gear was switched on") {
+                        CHECK(output.str() == "New gear has been switched on.\n");
+                    }
+                    
+                    AND_WHEN("giving command SetSpeed") {
+                        input.str("SetSpeed 30\n");
+                        output.str("");
+                        carHandler.HandleCommand();
+
+                        THEN("the sheed was changed") {
+                            CHECK(output.str() == "Speed has been changed.\n");
+                        }
+
+                        AND_WHEN("turning engine off") {
+                            input.str("SetSpeed 0\nSetGear 0\nEngineOff\n");
+                            output.str("");
+                            carHandler.HandleCommand();
+                            carHandler.HandleCommand();
+                            carHandler.HandleCommand();
+                            THEN("the engine was turned off") {
+                                CHECK(output.str() == "Speed has been changed.\nNew gear has been switched on.\nCar's engine has been turned off.\n");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        WHEN("giving command SetGear while the engine is off") {
+            input.str("SetGear 2\nSetGear 3\nSetGear 4\nSetGear 5\nSetGear 6\nSetGear 2\nSetGear -2\n");
+            carHandler.HandleCommand();
+            carHandler.HandleCommand();
+            carHandler.HandleCommand();
+            carHandler.HandleCommand();
+            carHandler.HandleCommand();
+            carHandler.HandleCommand();
+            carHandler.HandleCommand();
+            THEN("gear couldn't has been set when the engine was off") {
+                std::string str1 = "New gear cannot be switched on. Only neutral gear can be switched to while car's engine is turned off.\n";
+                std::string str2 = "New gear cannot be switched on. Gear number is out of range.\n";
+                std::string expectedOutStr = str1 + str1 + str1 + str1 + str2 + str1 + str2;
+                CHECK(output.str() == expectedOutStr);
+            }
+            AND_WHEN("giving command SetGear after turning engine on") {
+                input.str("EngineOn\nSetGear 2\nSetGear 3\nSetGear 4\nSetGear 5\nSetGear 6\nSetGear 2\nSetGear -2\nSetGear -1\n");
+                output.str("");
+                carHandler.HandleCommand();
+                carHandler.HandleCommand();
+                carHandler.HandleCommand();
+                carHandler.HandleCommand();
+                carHandler.HandleCommand();
+                carHandler.HandleCommand();
+                carHandler.HandleCommand();
+                carHandler.HandleCommand();
+                carHandler.HandleCommand();
+
+                THEN("only reverse gear was set ") {
+                    std::string str1 = "New gear cannot be switched on. Current speed is out of range of the new gear.\n";
+                    std::string str2 = "New gear cannot be switched on. Gear number is out of range.\n";
+                    std::string str3 = "New gear has been switched on.\n";
+                    std::string str4 = "Car's engine has been turned on.\n";
+                    std::string expectedOutStr = str4 + str1 + str1 + str1 + str1 + str2 + str1 + str2 + str3;
+                    CHECK(output.str() == expectedOutStr);
+                }
+
+                AND_WHEN("trying to switch to the 1st gear riding with non zero speed") {
+                    input.str("SetSpeed 15\nSetGear 1\n");
+                    output.str("");
+                    carHandler.HandleCommand();
+                    carHandler.HandleCommand();
+
+                    THEN("unable to switch to forward gear from back gear until the car stops") {
+                        CHECK(output.str() == "Speed has been changed.\nNew gear cannot be switched on. Forward gear can be switched to while riding on the back draft only after reducing speed to 0.\n");
+                    }
+                }
+            }
+            AND_WHEN("trying to switch to the back gear while riding forward") {
+                input.str("EngineOn\nSetGear 1\nSetSpeed 10\nSetGear -1\n");
+                output.str("");
+                carHandler.HandleCommand();
+                carHandler.HandleCommand();
+                carHandler.HandleCommand();
+                carHandler.HandleCommand();
+                THEN("unable to switch to back gear from forward gear until the car stops") {
+                    CHECK(output.str() == "Car's engine has been turned on.\nNew gear has been switched on.\nSpeed has been changed.\nNew gear cannot be switched on. Reverse gear can be switched to if only car has 0 speed.\n");
+                }
+               
+                AND_WHEN("trying to switch to another gear which is out of range") {
+                    input.str("SetGear 2\nSetGear 3\nSetGear 4\nSetGear 5\n");
+                    output.str("");
+                    carHandler.HandleCommand();
+                    carHandler.HandleCommand();
+                    carHandler.HandleCommand();
+                    carHandler.HandleCommand();
+
+                    THEN("unable to switch to another gear which is out of range") {
+                        std::string str = "New gear cannot be switched on. Current speed is out of range of the new gear.\n";
+                        std::string expectedOutStr = str + str + str + str;
+                        CHECK(output.str() == expectedOutStr);
+                    }
+                }
+            }
+        }
+
+        WHEN("giving command SetSpeed while the engine is off") {
+            input.str("SetSpeed 10\nSetSpeed 20\nSetSpeed 30\nSetSpeed 40\n");
+            carHandler.HandleCommand();
+            carHandler.HandleCommand();
+            carHandler.HandleCommand();
+            carHandler.HandleCommand();
+
+            THEN("speed couldn't has been set when the engine was off") {
+                std::string str = "Speed cannot be changed. The engine is turned off.\n";
+                std::string expectedOutStr = str + str + str + str;
+                CHECK(output.str() == expectedOutStr);
+            }
+            AND_WHEN("giving command SetGear after turning engine on") {
+                input.str("EngineOn\nSetSpeed 10\nSetSpeed 20\nSetSpeed 30\nSetSpeed 40\nSetSpeed -10\n");
+                output.str("");
+                carHandler.HandleCommand();
+                carHandler.HandleCommand();
+                carHandler.HandleCommand();
+                carHandler.HandleCommand();
+                carHandler.HandleCommand();
+                carHandler.HandleCommand();
+
+                THEN("speed cannot increase while the gear is 0") {
+                    std::string str1 = "Car's engine has been turned on.\n";
+                    std::string str2 = "Speed cannot be changed. Speed can only drop while the gear is neutral.\n";
+                    std::string str3 = "Speed cannot be changed. Speed must be non negative number.\n";
+                    std::string expectedOutStr = str1 + str2 + str2 + str2 + str2 + str3;
+                    CHECK(output.str() == expectedOutStr);
+                }
+
+                AND_WHEN("trying to increase speed") {
+                    input.str("SetGear 1\nSetSpeed 10\nSetSpeed 20\nSetSpeed 30\nSetSpeed 40\n");
+                    output.str("");
+                    carHandler.HandleCommand();
+                    carHandler.HandleCommand();
+                    carHandler.HandleCommand();
+                    carHandler.HandleCommand();
+                    carHandler.HandleCommand();
+                    THEN("able to increase speed until it's out of range") {
+                        CHECK(output.str() == "New gear has been switched on.\nSpeed has been changed.\nSpeed has been changed.\nSpeed has been changed.\nSpeed cannot be changed. New speed is out of range.\n");
                     }
                 }
             }

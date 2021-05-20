@@ -72,14 +72,9 @@ std::optional<std::vector<double>> ParseArgs(std::istream& args)
 
 void WorkSpace::PrintBodiesInfo()
 {
-	std::string infoTotal = "";
 	int level = 0;
-	std::for_each(m_bodies.rbegin(), m_bodies.rend(), [level, &infoTotal](auto& child)
-		{ 
-			infoTotal += child->ToString(level) + '\n';
-		}
-	);
-	m_output << infoTotal;
+	m_output << std::accumulate(m_bodies.begin(), m_bodies.end(), std::string{},
+		[level](std::string infoTotal, const std::shared_ptr<Body>& body) { return infoTotal += body->ToString(level) + '\n'; });
 }
 
 void WorkSpace::PrintMaxMassBody() const
@@ -119,7 +114,7 @@ bool WorkSpace::AddSphere(std::istream& input)
 	auto sphere = std::make_shared<Sphere>(arguments[0], arguments[1]);
 	if (m_compounds.empty())
 	{
-		m_bodies.push_back(sphere);
+		m_bodies.emplace_back(std::move(sphere));
 	}
 	else
 	{
@@ -149,7 +144,7 @@ bool WorkSpace::AddParallelepiped(std::istream& input)
 	else
 	{
 		std::weak_ptr<Compound> it = m_compounds.back();
-		it.lock()->AddChildBody(parallelepiped);
+		it.lock()->AddChildBody(std::move(parallelepiped));
 	}
 	return true;
 }
@@ -169,7 +164,7 @@ bool WorkSpace::AddCone(std::istream& input)
 	auto cone = std::make_shared<Cone>(arguments[0], arguments[1], arguments[2]);
 	if (m_compounds.empty())
 	{
-		m_bodies.push_back(cone);
+		m_bodies.emplace_back(std::move(cone));
 	}
 	else
 	{
@@ -194,7 +189,7 @@ bool WorkSpace::AddCylinder(std::istream& input)
 	auto cylinder = std::make_shared<Cylinder>(arguments[0], arguments[1], arguments[2]);
 	if (m_compounds.empty())
 	{
-		m_bodies.push_back(cylinder);
+		m_bodies.emplace_back(std::move(cylinder));
 	}
 	else
 	{
@@ -219,14 +214,14 @@ bool WorkSpace::AddCompound(std::istream& input)
 	auto compound = std::make_shared<Compound>();
 	if (m_compounds.empty())
 	{
-		m_bodies.push_back(compound);
+		m_bodies.emplace_back(compound);
 	}
 	else
 	{
 		std::weak_ptr<Compound> it = m_compounds.back();
 		it.lock()->AddChildBody(compound);
 	}
-	m_compounds.push_back(compound);
+	m_compounds.emplace_back(compound);
 	return true;
 }
 

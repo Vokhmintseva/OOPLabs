@@ -36,15 +36,18 @@ std::string HtmlDecode(std::string const& html)
 	size_t newPos = html.find('&', prevPos);
 	while (newPos != std::string::npos)
 	{
-		decodedStr += html.substr(prevPos, newPos - prevPos);
-		string captureStr = html.substr(newPos, maxLenOfSearchStr);
+		decodedStr.append(html, prevPos, newPos - prevPos);
+		string captureStr = "";
+		captureStr.append(html, newPos, maxLenOfSearchStr);
 		bool found = false;
 		unsigned int offset = 1;
 		for (const auto& [key, value] : codes)
 		{
-			if (key == captureStr.substr(0, key.length()))
+			string possibleStr = "";
+			possibleStr.append(captureStr, 0, key.length());
+			if (key == possibleStr)
 			{
-				decodedStr += value;
+				decodedStr.append(value);
 				offset = key.length();
 				found = true;
 				break;
@@ -52,12 +55,12 @@ std::string HtmlDecode(std::string const& html)
 		}
 		if (!found)
 		{
-			decodedStr += '&';
+			decodedStr.append("&");
 		}
 		prevPos = newPos + offset;
 		newPos = html.find('&', prevPos);
 	}
-	decodedStr += html.substr(prevPos);
+	decodedStr.append(html, prevPos);
 	return decodedStr;
 }
 

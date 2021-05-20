@@ -1,7 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <regex>
+//#include <regex>
 #include "CarHandler.h"
 #include "Car.h"
 
@@ -38,7 +38,7 @@ bool CarHandler::HandleCommand()
 	return false;
 }
 
-std::string CarHandler::GetDirection(Car::Direction dir)
+const std::string CarHandler::GetDirection(Car::Direction dir)
 {
 	std::string direction;
 	if (dir == Car::Direction::Static)
@@ -53,7 +53,7 @@ std::string CarHandler::GetDirection(Car::Direction dir)
 	{
 		direction = "backward";
 	}
-	return direction;
+	return std::move(direction);
 }
 
 bool CarHandler::Info(std::istream& args)
@@ -84,6 +84,7 @@ bool CarHandler::EngineOff(std::istream& args)
 	{
 		m_output << m_car.GetErrorReason() << "\n";
 	}
+	m_output << "Car's engine has been turned off.\n";
 	return true;
 }
 

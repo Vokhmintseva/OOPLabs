@@ -26,8 +26,7 @@ std::string Sphere::ToString(int level) const
 {
 	std::string baseInfo = Body::ToString(level);
 	std::ostringstream info;
-	std::string shift;
-	shift.insert(0, " ", level);
+	std::string shift(level, (char)0x20);
 	info << std::fixed << std::setprecision(2);
 	info << shift << "Radius: " << GetRadius() << "\n";
 	std::string infoStr = info.str();

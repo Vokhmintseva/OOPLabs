@@ -3,8 +3,7 @@
 
 std::string Body::ToString(int level) const
 {
-	std::string shift;
-	shift.insert(0, " ", level);
+	std::string shift(level, (char)0x20);
 	std::ostringstream info;
 	info << std::fixed << std::setprecision(2);
 	info << shift << GetName() << '\n';

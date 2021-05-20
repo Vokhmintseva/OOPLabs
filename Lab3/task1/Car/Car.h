@@ -13,22 +13,18 @@ public:
 		Forward,
 		Backward,
 	};
-
-    bool TurnOnEngine();
+    
+	bool TurnOnEngine();
 	bool TurnOffEngine();
 	bool SetGear(int newGear);
 	bool SetSpeed(int newSpeed);
-
 	bool IsTurnedOn() const;
 	Direction GetDirection() const;
 	unsigned int GetSpeed() const;
 	int GetGear() const;
 	const std::string& GetErrorReason() const &;
-	std::string GetErrorReason() &&
-	{
-		return std::move(m_errorReason);
-	}
-	
+	const std::string GetErrorReason() const &&;
+
 private:
 	enum class Gear
 	{
@@ -40,13 +36,13 @@ private:
 		Four = 4,
 		Five = 5,
 	};
-
+	
 	struct SpeedLimits
 	{
 		int Min;
 		int Max;
 	};
-
+	
 	const std::map<Car::Gear, SpeedLimits> speedLimits =
 	{
 		{Car::Gear::Reverse, {-20, 0}},
@@ -57,9 +53,6 @@ private:
 		{Car::Gear::Four, {40, 90}},
 		{Car::Gear::Five, {50, 150}}
 	};
-
-	bool CanSwitchGear(Car::Gear newGear); // Имя функции не подразумевает, что она будет менять состояние объекта
-	bool CanSetSpeed(int newSpead); 
 	
 	bool m_isTurnedOn;
 	int m_speed;
@@ -67,18 +60,3 @@ private:
 	std::string m_errorReason;
 };
 
-/*
-
-Car MakeCar();
-
-int m()
-{
-	string errorReason = MakeCar().GetErrorReason(); // Error reason will be moved
-	Car c;
-	const string& errorReason1 = c.GetErrorReason(); // Error reason will be copied
-
-	const string& errorReason2 = MakeCar().GetErrorReason(); // Время жизни возвращённого временного объекта будет продлено до конца блока
-
-}
-
-*/

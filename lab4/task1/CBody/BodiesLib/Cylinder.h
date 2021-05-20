@@ -1,7 +1,7 @@
 #pragma once
 #include "SolidBody.h"
 
-class Cylinder :
+class Cylinder final:
     public SolidBody
 {
 public:

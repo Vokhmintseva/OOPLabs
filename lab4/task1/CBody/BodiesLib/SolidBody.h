@@ -5,10 +5,10 @@ class SolidBody :
 	public Body
 {
 public:
-	SolidBody(double density);
-	virtual ~SolidBody() = default;
-	double GetDensity() const override;
-	double GetMass() const override;
+	double GetDensity() const override final;
+	double GetMass() const override final;
+protected:
+	explicit SolidBody(double density);
 private:
 	double m_density;
 };

@@ -10,16 +10,13 @@ class CarHandler
 public:
 	CarHandler(Car& car, std::istream& input, std::ostream& output);
 	bool HandleCommand();
-	static std::string GetDirection(Car::Direction dir);
-
+	static const std::string GetDirection(Car::Direction dir);
 private:
 	bool Info(std::istream& args);
 	bool EngineOn(std::istream& args);
 	bool EngineOff(std::istream& args);
 	bool SetGear(std::istream& args);
 	bool SetSpeed(std::istream& args);
-	
-private:
 	using Handler = std::function<bool(std::istream& args)>;
 	using ActionMap = std::map<std::string, Handler>;
 

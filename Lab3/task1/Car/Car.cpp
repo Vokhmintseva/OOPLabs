@@ -60,7 +60,7 @@ bool Car::SetGear(int gear)
 	}
 
 	//на переднюю передачу можно переключиться только после остановки
-    if (newGear == Car::Gear::One && m_speed < 0)
+	if (newGear != Car::Gear::Reverse && newGear != Car::Gear::Neutral && m_speed < 0)
 	{
 		m_errorReason = "Forward gear can be switched to while riding on the back draft only after reducing speed to 0";
 		return false;

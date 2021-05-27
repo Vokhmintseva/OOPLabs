@@ -28,10 +28,28 @@ TEST_CASE("Complex number getting magnitude and argument test")
 		CHECK(complex.Im() == -2);
 		CHECK(complex.GetMagnitude() == 2.0);
 		double arg = complex.GetArgument();
-		CHECK(arg != arg);
+		CHECK(arg == Approx(-1.57).margin(0.01));
 		Complex res = complex + Complex(1, 2);
 		CHECK(res.Re() == 1);
 		CHECK(res.Im() == 0);
+	}
+
+	SECTION("positive negative real and 0 image part")
+	{
+		Complex complex(2, 0);
+		CHECK(complex.Re() == 2);
+		CHECK(complex.Im() == 0);
+		CHECK(complex.GetMagnitude() == 2.0);
+		CHECK(complex.GetArgument() == 0);
+	}
+
+	SECTION("negative real and 0 image part")
+	{
+		Complex complex(-2, 0);
+		CHECK(complex.Re() == -2);
+		CHECK(complex.Im() == 0);
+		CHECK(complex.GetMagnitude() == 2.0);
+		CHECK(complex.GetArgument() == Approx(3.14).margin(0.01));
 	}
 
 	SECTION("negative real and image parts")
@@ -276,22 +294,22 @@ TEST_CASE("Operator <<")
 	Complex complex1(19, 11.21);
 	std::ostringstream output;
 	output << complex1;
-	CHECK(output.str() == "19+11.2i");
+	CHECK(output.str() == "19.0+11.2i");
 
 	output.str("");
 	Complex complex2(0.04, -11.05);
 	output << complex2;
-	CHECK(output.str() == "0-11.1i");
+	CHECK(output.str() == "0.0-11.1i");
 
 	output.str("");
 	Complex complex3(0.05, -0.04);
 	output << complex3;
-	CHECK(output.str() == "0.1-0i");
+	CHECK(output.str() == "0.1-0.0i");
 
 	output.str("");
 	Complex complex4(-0.049, -0.049);
 	output << complex4;
-	CHECK(output.str() == "0-0i");
+	CHECK(output.str() == "-0.0-0.0i");
 
 	output.str("");
 	Complex complex5(14.4, -15.4);
@@ -306,12 +324,12 @@ TEST_CASE("Operator <<")
 	output.str("");
 	Complex complex7(5);
 	output << complex7;
-	CHECK(output.str() == "5+0i");
+	CHECK(output.str() == "5.0+0.0i");
 
 	output.str("");
 	Complex complex8;
 	output << complex8;
-	CHECK(output.str() == "0+0i");
+	CHECK(output.str() == "0.0+0.0i");
 }
 
 TEST_CASE("Operator >>")

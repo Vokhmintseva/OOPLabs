@@ -1,4 +1,13 @@
 #include "Complex.h"
+#define _USE_MATH_DEFINES
+#include <math.h>
+#include <cmath>
+#include <float.h>
+#include <limits>
+#include <stdexcept>
+#include <string>
+#include <sstream> 
+#include <iomanip>
 
 Complex::Complex(double real, double image)
 	: m_real(real)
@@ -23,60 +32,11 @@ double Complex::GetMagnitude() const
 
 double Complex::GetArgument() const
 {
-	if(fabs(m_real) < DBL_EPSILON)
+	if(fabs(m_real) < DBL_EPSILON && fabs(m_image) < DBL_EPSILON)
 	{
 		return std::numeric_limits<double>::quiet_NaN();
 	}
-	if (m_real > 0.0f)
-	{
-		return atan(m_image / m_real);
-	}
-	if (m_real < 0.0f)
-	{
-		if (m_image < 0.0f)
-		{
-			return atan(m_image / m_real) - M_PI;
-		}
-		else
-		{
-			return atan(m_image / m_real) + M_PI;
-		}
-	}
-	return std::numeric_limits<double>::quiet_NaN();
-}
-
-Complex const Complex::operator +(Complex const& rightOperand) const
-{
-	return Complex(m_real + rightOperand.m_real, m_image + rightOperand.m_image);
-}
-
-Complex const Complex::operator *(Complex const& rightOperand) const
-{
-	return Complex(m_real * rightOperand.m_real - m_image * rightOperand.m_image,
-		m_real * rightOperand.m_image + m_image * rightOperand.m_real);
-}
-
-Complex const Complex::operator /(Complex const& rightOperand) const
-{
-	if (fabs(rightOperand.m_real) < DBL_EPSILON && fabs(rightOperand.m_image) < DBL_EPSILON)
-	{
-		throw std::invalid_argument("not allowed to devide by 0");
-	}
-	const double &re = rightOperand.m_real;
-	const double &im = rightOperand.m_image;
-	Complex numerator(m_real * re + m_image * im, m_real * im * (-1) + m_image * re);
-	double denominator = re * re + im * im;
-	return Complex(numerator.Re() / denominator, numerator.Im() / denominator);
-}
-
-Complex const Complex::operator +() const
-{
-	return Complex(m_real, m_image);
-}
-
-Complex const Complex::operator -() const
-{
-	return Complex(m_real * (-1), m_image * (-1));
+	return atan2(m_image, m_real);
 }
 
 Complex& Complex::operator +=(Complex const& rightOperand)
@@ -117,81 +77,51 @@ Complex& Complex::operator /=(Complex const& rightOperand)
 	return *this;
 }
 
-bool Complex::operator ==(Complex const& rightOperand)
+Complex const Complex::operator +() const
 {
-	return (fabs(m_real - rightOperand.Re()) < DBL_EPSILON) && (fabs(m_image - rightOperand.Im()) < DBL_EPSILON);
+	return Complex(m_real, m_image);
 }
 
-bool Complex::operator !=(Complex const& rightOperand)
+Complex const Complex::operator -() const
 {
-	return (fabs(m_real - rightOperand.Re()) >= DBL_EPSILON) || (fabs(m_image - rightOperand.Im()) >= DBL_EPSILON);
+	return Complex(m_real * (-1), m_image * (-1));
 }
 
-Complex const operator -(Complex const& leftOperand, Complex const& rightOperand)
+bool operator ==(Complex lhs, const Complex& rhs)
 {
-	return Complex(leftOperand.Re() - rightOperand.Re(), leftOperand.Im() - rightOperand.Im());
+	return (fabs(lhs.Re() - rhs.Re()) < DBL_EPSILON) && (fabs(lhs.Im() - rhs.Im()) < DBL_EPSILON);
 }
 
-Complex const operator *(double num, Complex const& complexNum)
+bool operator !=(Complex lhs, const Complex& rhs)
 {
-	return Complex(num * complexNum.Re(), num * complexNum.Im());
+	return !(lhs == rhs);
 }
 
-Complex const operator /(double num, Complex const& rightOperand)
+Complex const operator +(Complex lhs, const Complex& rhs)
 {
-	Complex numerator(num);
-	return numerator / rightOperand;
+	return lhs += rhs;
 }
 
-bool operator ==(double num, Complex const& rightOperand)
+Complex const operator -(Complex lhs, const Complex& rhs)
 {
-	return (fabs(num - rightOperand.Re()) < DBL_EPSILON) && (fabs(rightOperand.Im()) < DBL_EPSILON);
+	return lhs -= rhs;
 }
 
-bool operator !=(double num, Complex const& rightOperand)
+Complex const operator *(Complex lhs, const Complex& rhs)
 {
-	return (fabs(num - rightOperand.Re()) >= DBL_EPSILON) || (fabs(rightOperand.Im()) >= DBL_EPSILON);
+	return lhs *= rhs;
+}
+
+Complex const operator /(Complex lhs, const Complex& rhs)
+{
+	return lhs /= rhs;
 }
 
 std::ostream& operator<<(std::ostream& stream, Complex const& complex)
 {
-	std::string sign = "";
-	if (complex.Im() >= 0)
-	{
-		sign = '+';
-	}
-	else
-	{
-		sign = '-';
-	}
-	const double& real = complex.Re();
-	const double image = fabs(complex.Im());
-	
-	std::string realStr = "";
-	if ((fabs(real) - (int)real) < 0.05)
-	{
-		realStr = std::to_string((int)real);
-	}
-	else
-	{
-		std::ostringstream strs;
-		strs << std::fixed << std::setprecision(1) << real;
-		realStr = strs.str();
-	}
-
-	std::string imageStr = "";
-	if (image - (int)image < 0.05)
-	{
-		imageStr = std::to_string((int)image);
-	}
-	else
-	{
-		std::ostringstream strs2;
-		strs2 << std::fixed << std::setprecision(1) << image;
-		imageStr = strs2.str();
-	}
-
-	stream << realStr << sign << imageStr << 'i';
+	std::string sign;
+	sign = complex.Im() >= 0 ? '+' : '-';
+	stream << std::fixed << std::setprecision(1) << complex.Re() << sign << fabs(complex.Im()) << 'i';
 	return stream;
 }
 

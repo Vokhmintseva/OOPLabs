@@ -39,7 +39,10 @@ public:
 	MyString& operator +=(MyString const& s);
 	const char& operator[](size_t index)const;
 	char& operator[](size_t index);
+	MyString friend operator +(const MyString lhs, const MyString& rhs);
 private:
+	struct Tag {};
+	MyString(char* pString, size_t length, Tag tag);
 	char* m_pString;
 	size_t m_length;
 };
@@ -49,6 +52,6 @@ bool operator ==(const MyString& lhs, const MyString& rhs);
 bool operator !=(const MyString& lhs, const MyString& rhs);
 bool operator <=(const MyString& lhs, const MyString& rhs);
 bool operator >=(const MyString& lhs, const MyString& rhs);
-const MyString operator +(MyString lhs, const MyString& rhs);
+MyString operator +(const MyString lhs, const MyString& rhs);
 std::ostream& operator<<(std::ostream& stream, MyString const& cstr);
 std::istream& operator>>(std::istream& stream, MyString& cstr);

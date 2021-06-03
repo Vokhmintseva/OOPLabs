@@ -13,7 +13,6 @@ MyString::MyString()
 MyString::MyString(const char* pString)
 	:m_length(strlen(pString))
 {
-	//std::cout << "constructor MyString(const char* pString)" << std::endl;
 	m_pString = new char[m_length + 1];
 	memcpy(m_pString, pString, m_length + 1);
 };
@@ -21,16 +20,19 @@ MyString::MyString(const char* pString)
 MyString::MyString(const char* pString, size_t length)
 	:m_length(length)
 {
-	//std::cout << "constructor MyString(const char* pString, size_t length)" << std::endl;
 	m_pString = new char[length + 1];
-	memset(&m_pString[length], '\0', sizeof(char));
+	m_pString[length] = '\0';
 	memcpy(m_pString, pString, m_length);
 };
+
+MyString::MyString(char* pString, size_t length, Tag tag)
+	:m_length(length)
+	,m_pString(pString)
+{}
 
 MyString::MyString(std::string const& stlString)
 	:m_length(stlString.length())
 {
-	//std::cout << "constructor MyString(std::string const& stlString)" << std::endl;
 	m_pString = new char[m_length + 1];
 	memcpy(m_pString, stlString.c_str(), m_length + 1);
 };
@@ -101,13 +103,20 @@ MyString MyString::SubString(size_t start, size_t length) const
 	{
 		throw std::out_of_range("");
 	}
-	if (length == 0)
-	{
-		throw std::invalid_argument("");
-	}
 	return MyString(&m_pString[start], length);
 }
 
+MyString& MyString::operator +=(MyString const& s)
+{
+	char* newStr = new char[m_length + s.GetLength() + 1];
+	memcpy(newStr, m_pString, m_length);
+	memcpy(newStr + m_length, s.GetStringData(), s.GetLength() + 1);
+	delete[] m_pString;
+	m_pString = newStr;
+	m_length += s.GetLength();
+	return *this;
+}
+/*
 MyString& MyString::operator +=(MyString const& s)
 {
 	char* newStr = new char[m_length + strlen(s.GetStringData()) + 1];
@@ -118,6 +127,7 @@ MyString& MyString::operator +=(MyString const& s)
 	m_length += strlen(s.GetStringData());
 	return *this;
 }
+*/
 
 const char& MyString::operator[](size_t index)const
 {
@@ -139,7 +149,7 @@ char& MyString::operator[](size_t index)
 
 bool operator <(const MyString& lhs, const MyString& rhs)
 {
-	size_t minLen = lhs.GetLength() <= rhs.GetLength() ? lhs.GetLength() : rhs.GetLength();
+	size_t minLen = std::min(lhs.GetLength(), rhs.GetLength());
 	for (size_t i = 0; i < minLen; i++)
 	{
 		if (lhs.GetStringData()[i] < rhs.GetStringData()[i])
@@ -156,7 +166,7 @@ bool operator <(const MyString& lhs, const MyString& rhs)
 
 bool operator >(const MyString& lhs, const MyString& rhs)
 {
-	return lhs != rhs && !(lhs < rhs);
+	return rhs < lhs;
 }
 
 bool operator ==(const MyString& lhs, const MyString& rhs)
@@ -180,9 +190,18 @@ bool operator !=(const MyString& lhs, const MyString& rhs)
 	return !(lhs == rhs);
 }
 
-const MyString operator +(MyString lhs, const MyString& rhs)
+/*MyString operator +(MyString lhs, const MyString& rhs)
 {
 	return lhs += rhs;
+}*/
+
+MyString operator +(const MyString lhs, const MyString& rhs)
+{
+	size_t newStrLen = lhs.GetLength() + rhs.GetLength();
+	char* data = new char[newStrLen + 1];
+	memcpy(data, lhs.GetStringData(), lhs.GetLength());
+	memcpy(data + lhs.GetLength(), rhs.GetStringData(), rhs.GetLength() + 1);
+	return MyString(data, newStrLen, MyString::Tag{});
 }
 
 std::ostream& operator<<(std::ostream& stream, MyString const& cstr)
@@ -199,12 +218,12 @@ std::ostream& operator<<(std::ostream& stream, MyString const& cstr)
 
 bool operator <=(const MyString& lhs, const MyString& rhs)
 {
-	return lhs == rhs || lhs < rhs;
+	return !(lhs > rhs);
 }
 
 bool operator >=(const MyString& lhs, const MyString& rhs)
 {
-	return lhs == rhs || lhs > rhs;
+	return !(lhs < rhs);
 }
 
 std::istream& operator>>(std::istream& stream, MyString& cstr)
@@ -218,14 +237,14 @@ std::istream& operator>>(std::istream& stream, MyString& cstr)
 		buffer[index++] = ch;
 		if (index == MAX_SIZE)
 		{
-			cstr += buffer;
+			cstr += MyString(buffer, MAX_SIZE);
 			index = 0;
 		} 
 	}
 	if (index < MAX_SIZE)
 	{
 		buffer[index] = '\0';
-		cstr += buffer;
+		cstr += MyString(buffer, index);
 	}
 	return stream;
 }

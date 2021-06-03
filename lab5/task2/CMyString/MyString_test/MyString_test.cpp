@@ -149,13 +149,19 @@ TEST_CASE("method SubString")
 		CHECK(subStr.GetStringData()[1] == '\0');
 		CHECK(MyString("r") == subStr);
 	}
+	SECTION("creating empty substring")
+	{
+		MyString subStr = myStr.SubString(8, 0);
+		CHECK(subStr.GetLength() == 0);
+		CHECK(subStr.GetStringData()[0] == '\0');
+		CHECK(MyString("") == subStr);
+	}
 	SECTION("incorrect arguments given")
 	{
 		REQUIRE_THROWS_AS(myStr.SubString(0, 9), std::out_of_range);
 		REQUIRE_THROWS_AS(myStr.SubString(2, 7), std::out_of_range);
 		REQUIRE_THROWS_AS(myStr.SubString(7, 2), std::out_of_range);
 		REQUIRE_THROWS_AS(myStr.SubString(9, 1), std::out_of_range);
-		REQUIRE_THROWS_AS(myStr.SubString(8, 0), std::invalid_argument);
 	}
 }
 
@@ -456,6 +462,11 @@ TEST_CASE("operator <<")
 	output.str("");
 	output << str4;
 	CHECK(output.str() == "The London is the capital of GB\n");
+
+	MyString str5("The\0London\0is\0the\0capital of GB\n");
+	output.str("");
+	output << str5;
+	CHECK(output.str() == "The\0London\0is\0the\0capital of GB\n");
 }
 
 TEST_CASE("Operator >>")

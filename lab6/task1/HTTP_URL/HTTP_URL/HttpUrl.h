@@ -34,3 +34,7 @@ private:
 	unsigned short m_port;
 	std::string m_document;
 };
+
+unsigned short GetPort(const std::string& portStr, Protocol protocol);
+
+std::string ToLowLetters(const std::string& str);

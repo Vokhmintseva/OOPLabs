@@ -1,12 +1,11 @@
 #include "HttpUrl.h"
 #include <iostream>
 
-const std::regex urlRe("^(https|http):\\/\\/(?:www\\.)?([-a-zA-Z\\d@:%._\\+~#=]{2,256}\\.[a-zA-Z]{2,6})(?::(\\d{1,5}))?(\\/[-a-zA-Z0-9@:%_\\+.~#?&\\=\\/]*)?\\/?$", std::regex::icase);
+const std::regex urlRe("^(https|http):\\/\\/(?:www\\.)?([-a-zA-Z\\d@:%._\\+~#=]{2,256}\\.[a-zA-Z]{2,6}|(?:[0-9]{1,3}[\\.]){3}[0-9]{1,3})(?::(\\d{1,5}))?(\\/[-a-zA-Z0-9@:%_\\+.~#?&\\=\\/]*)?$", std::regex::icase);
 const std::regex domainRe("^[-a-zA-Z\\d@:%._\\+~#=]{2,256}\\.[a-zA-Z]{2,6}$", std::regex::icase);
 const std::regex documentRe("^[-a-zA-Z0-9@:%_\\+.~#?&\\=\\/]+$", std::regex::icase);
 
 HttpUrl::HttpUrl(std::string const& url)
-try
 {
 	std::smatch matches;
 	if (std::regex_match(url, matches, urlRe))
@@ -16,16 +15,12 @@ try
 		std::string document = matches[4].str();
 		m_domain = ToLowLetters(domain);
 		m_port = GetPort(matches[3].str(), m_protocol);
-		m_document = ToLowLetters(document);
+		m_document = document.empty() ? "/" : ToLowLetters(document);
 	}
 	else
 	{
 		throw UrlParsingError("invalid url");
 	}
-}
-catch (UrlParsingError const&)
-{
-	throw;
 }
 
 HttpUrl::HttpUrl(std::string const& domain, std::string const& document, Protocol protocol)
@@ -35,7 +30,7 @@ HttpUrl::HttpUrl(std::string const& domain, std::string const& document, Protoco
 	{
 		m_domain = ToLowLetters(domain);
 		m_document = ToLowLetters(document);
-		m_port = m_protocol == Protocol::HTTPS ? 443 : 8080;
+		m_port = m_protocol == Protocol::HTTPS ? 443 : 80;
 		if (m_document[0] != '/')
 		{
 			m_document.insert(0, std::string("/"));
@@ -70,7 +65,7 @@ unsigned short HttpUrl::GetPort(const std::string& portStr, Protocol protocol)
 {
 	if (portStr.empty())
 	{
-		return protocol == Protocol::HTTP ? 8080 : 443;
+		return protocol == Protocol::HTTP ? 80 : 443;
 	}
 	unsigned int port = std::stoi(portStr);
 	if (port > 65535)
@@ -89,9 +84,14 @@ std::string HttpUrl::ToLowLetters(const std::string& str)
 
 std::string HttpUrl::GetURL()const
 {
-	std::string port = (m_port == 443 || m_port == 8080) ? "" : (':' + std::to_string(m_port));
+	std::string port = (m_port == 443 || m_port == 80) ? "" : (':' + std::to_string(m_port));
 	std::string protocol = m_protocol == Protocol::HTTPS ? "https://" : "http://";
-	return protocol + m_domain + port + m_document;
+	std::string document = m_document;
+	if (document == "/")
+	{
+		document = "";
+	}
+	return protocol + m_domain + port + document;
 }
 
 std::string HttpUrl::GetDomain()const

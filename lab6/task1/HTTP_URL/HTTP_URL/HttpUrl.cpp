@@ -1,7 +1,7 @@
 #include "HttpUrl.h"
 #include <iostream>
 
-const std::regex urlRe("^(https|http):\\/\\/(?:www\\.)?([-a-zA-Z\\d@:%._\\+~#=]{2,256}\\.[a-zA-Z]{2,6})(?::(\\d{1,5}))?(\\/[-a-zA-Z0-9@:%_\\+.~#?&\\=]*)?\\/?$", std::regex::icase);
+const std::regex urlRe("^(https|http):\\/\\/(?:www\\.)?([-a-zA-Z\\d@:%._\\+~#=]{2,256}\\.[a-zA-Z]{2,6})(?::(\\d{1,5}))?(\\/[-a-zA-Z0-9@:%_\\+.~#?&\\=\\/]*)?\\/?$", std::regex::icase);
 const std::regex domainRe("^[-a-zA-Z\\d@:%._\\+~#=]{2,256}\\.[a-zA-Z]{2,6}$", std::regex::icase);
 const std::regex documentRe("^[-a-zA-Z0-9@:%_\\+.~#?&\\=\\/]+$", std::regex::icase);
 

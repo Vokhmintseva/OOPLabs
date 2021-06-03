@@ -82,6 +82,15 @@ TEST_CASE("url without port")
 		CHECK(url.GetDomain() == "255.255.255.255");
 		CHECK(url.GetDocument() == "/image.png/");
 	}
+	SECTION("url - localhost")
+	{
+		HttpUrl url("https://localhost/image.png/");
+		CHECK(url.GetURL() == "https://localhost/image.png/");
+		CHECK(url.GetProtocol() == Protocol::HTTPS);
+		CHECK(url.GetPort() == 443);
+		CHECK(url.GetDomain() == "localhost");
+		CHECK(url.GetDocument() == "/image.png/");
+	}
 }
 
 TEST_CASE("url without document")
@@ -98,10 +107,7 @@ TEST_CASE("invalid url in capital letters")
 {
 	REQUIRE_THROWS_WITH(HttpUrl("htt://invalirurl:8025/testdocument/"), "invalid url");
 	REQUIRE_THROWS_WITH(HttpUrl("https:/invalirurl:8025/testdocument/"), "invalid url");
-	REQUIRE_THROWS_WITH(HttpUrl("https://invalirurl:802/testdocument/"), "invalid url");
-	REQUIRE_THROWS_WITH(HttpUrl("https://invalirurl8025/testdocument/"), "invalid url");
 	REQUIRE_THROWS_WITH(HttpUrl("https:invalirurl:8025/testdocument/"), "invalid url");
-	REQUIRE_THROWS_WITH(HttpUrl("https://invalirurl/8025/testdocument/"), "invalid url");
 	REQUIRE_THROWS_WITH(HttpUrl("https://invalidurl.com:65536/testdocument/"), "invalid port value");
 }
 
@@ -165,7 +171,7 @@ TEST_CASE("url constructor with 4 parameters")
 	SECTION("url with domain, document, protocol, port")
 	{
 		HttpUrl url("test.com", "/image.png", Protocol::HTTPS, 80);
-		CHECK(url.GetURL() == "https://test.com/image.png");
+		CHECK(url.GetURL() == "https://test.com:80/image.png");
 		CHECK(url.GetProtocol() == Protocol::HTTPS);
 		CHECK(url.GetPort() == 80);
 		CHECK(url.GetDomain() == "test.com");

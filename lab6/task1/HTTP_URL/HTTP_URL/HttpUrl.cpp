@@ -1,7 +1,7 @@
 #include "HttpUrl.h"
 #include <iostream>
 
-const std::regex urlRe("^(https|http):\\/\\/(?:www\\.)?([-a-zA-Z\\d@:%._\\+~#=]{2,256}\\.[a-zA-Z]{2,6}|(?:[0-9]{1,3}[\\.]){3}[0-9]{1,3})(?::(\\d{1,5}))?(\\/[-a-zA-Z0-9@:%_\\+.~#?&\\=\\/]*)?$", std::regex::icase);
+const std::regex urlRe("^(https|http):\\/\\/(?:www\\.)?([-a-zA-Z\\d@%._\\+~#=]{2,256}|(?:[0-9]{1,3}[\\.]){3}[0-9]{1,3})(?::(\\d{1,5}))?(\\/[-a-zA-Z0-9@:%_\\+.~#?&\\=\\/]*)?$", std::regex::icase);
 const std::regex domainRe("^[-a-zA-Z\\d@:%._\\+~#=]{2,256}\\.[a-zA-Z]{2,6}$", std::regex::icase);
 const std::regex documentRe("^[-a-zA-Z0-9@:%_\\+.~#?&\\=\\/]+$", std::regex::icase);
 
@@ -84,7 +84,7 @@ std::string HttpUrl::ToLowLetters(const std::string& str)
 
 std::string HttpUrl::GetURL()const
 {
-	std::string port = (m_port == 443 || m_port == 80) ? "" : (':' + std::to_string(m_port));
+	std::string port = (m_port == 443 && m_protocol == Protocol::HTTPS || m_port == 80 && m_protocol == Protocol::HTTP) ? "" : (':' + std::to_string(m_port));
 	std::string protocol = m_protocol == Protocol::HTTPS ? "https://" : "http://";
 	std::string document = m_document;
 	if (document == "/")

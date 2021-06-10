@@ -299,17 +299,17 @@ TEST_CASE("Operator <<")
 	output.str("");
 	Complex complex2(0.04, -11.05);
 	output << complex2;
-	CHECK(output.str() == "0.0-11.1i");
+	CHECK(output.str() == "0.04-11.05i");
 
 	output.str("");
 	Complex complex3(0.05, -0.04);
 	output << complex3;
-	CHECK(output.str() == "0.1-0.0i");
+	CHECK(output.str() == "0.05-0.04i");
 
 	output.str("");
 	Complex complex4(-0.049, -0.049);
 	output << complex4;
-	CHECK(output.str() == "-0.0-0.0i");
+	CHECK(output.str() == "-0.049-0.049i");
 
 	output.str("");
 	Complex complex5(14.4, -15.4);
@@ -319,17 +319,17 @@ TEST_CASE("Operator <<")
 	output.str("");
 	Complex complex6(-0.05, 0.05);
 	output << complex6;
-	CHECK(output.str() == "-0.1+0.1i");
+	CHECK(output.str() == "-0.05+0.05i");
 
 	output.str("");
 	Complex complex7(5);
 	output << complex7;
-	CHECK(output.str() == "5.0+0.0i");
+	CHECK(output.str() == "5+0i");
 
 	output.str("");
 	Complex complex8;
 	output << complex8;
-	CHECK(output.str() == "0.0+0.0i");
+	CHECK(output.str() == "0+0i");
 }
 
 TEST_CASE("Operator >>")

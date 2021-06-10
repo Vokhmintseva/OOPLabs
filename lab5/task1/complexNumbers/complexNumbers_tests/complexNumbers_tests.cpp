@@ -294,7 +294,7 @@ TEST_CASE("Operator <<")
 	Complex complex1(19, 11.21);
 	std::ostringstream output;
 	output << complex1;
-	CHECK(output.str() == "19.0+11.2i");
+	CHECK(output.str() == "19+11.21i");
 
 	output.str("");
 	Complex complex2(0.04, -11.05);

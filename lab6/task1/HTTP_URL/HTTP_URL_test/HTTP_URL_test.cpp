@@ -46,14 +46,9 @@ TEST_CASE("url without port")
 		CHECK(url.GetDomain() == "testurl.ru");
 		CHECK(url.GetDocument() == "/image.png/");
 	}
-	SECTION("url without 0 port - https")
+	SECTION("url with 0 port - https")
 	{
-		HttpUrl url("https://testurl.ru:0/image.png/");
-		CHECK(url.GetURL() == "https://testurl.ru:0/image.png/");
-		CHECK(url.GetProtocol() == Protocol::HTTPS);
-		CHECK(url.GetPort() == 0);
-		CHECK(url.GetDomain() == "testurl.ru");
-		CHECK(url.GetDocument() == "/image.png/");
+		REQUIRE_THROWS_WITH(HttpUrl("https://testurl.ru:0/image.png/"), "invalid port value");
 	}
 	SECTION("url with port 65535 - https")
 	{
@@ -186,15 +181,11 @@ TEST_CASE("url constructor with 4 parameters")
 		CHECK(url.GetDomain() == "test.com");
 		CHECK(url.GetDocument() == "/image.png");
 	}
-	SECTION("url with domain, document, protocol, port")
+	SECTION("url with domain, document, protocol, port 0")
 	{
-		HttpUrl url("test.ru", "/path/to/document/", Protocol::HTTP, 0);
-		CHECK(url.GetURL() == "http://test.ru:0/path/to/document/");
-		CHECK(url.GetProtocol() == Protocol::HTTP);
-		CHECK(url.GetPort() == 0);
-		CHECK(url.GetDomain() == "test.ru");
-		CHECK(url.GetDocument() == "/path/to/document/");
+		REQUIRE_THROWS_WITH(HttpUrl("test.ru", "/path/to/document/", Protocol::HTTP, 0), "invalid url parameters");
 	}
+
 	SECTION("invalid parameters")
 	{
 		REQUIRE_THROWS_AS(HttpUrl("test.ru", "", Protocol::HTTP, 8080), std::invalid_argument);

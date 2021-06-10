@@ -44,8 +44,12 @@ HttpUrl::HttpUrl(std::string const& domain, std::string const& document, Protoco
 
 HttpUrl::HttpUrl(std::string const& domain, std::string const& document, Protocol protocol, unsigned short port)
 	: m_protocol(protocol)
-	, m_port(port)
 {
+	if (port == 0)
+	{
+		throw std::invalid_argument("invalid url parameters");
+	}
+	m_port = port;
 	if (std::regex_match(domain, domainRe) && std::regex_match(document, documentRe))
 	{
 		m_domain = ToLowLetters(domain);
@@ -68,7 +72,7 @@ unsigned short HttpUrl::GetPort(const std::string& portStr, Protocol protocol)
 		return protocol == Protocol::HTTP ? 80 : 443;
 	}
 	unsigned int port = std::stoi(portStr);
-	if (port > 65535)
+	if (port == 0 || port > 65535)
 	{
 		throw UrlParsingError("invalid port value");
 	}

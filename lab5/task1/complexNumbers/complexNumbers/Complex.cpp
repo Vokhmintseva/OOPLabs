@@ -121,7 +121,7 @@ std::ostream& operator<<(std::ostream& stream, Complex const& complex)
 {
 	std::string sign;
 	sign = complex.Im() >= 0 ? '+' : '-';
-	stream << std::fixed << std::setprecision(1) << complex.Re() << sign << fabs(complex.Im()) << 'i';
+	stream << complex.Re() << sign << fabs(complex.Im()) << 'i';
 	return stream;
 }
 

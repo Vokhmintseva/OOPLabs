@@ -154,7 +154,7 @@ const std::string& Car::GetErrorReason() const &
     return m_errorReason;
 }
 
-const std::string Car::GetErrorReason() const&&
+std::string Car::GetErrorReason()&&
 {
 	return std::move(m_errorReason);
 }

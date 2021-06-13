@@ -1,7 +1,8 @@
 #pragma once
 #include <string>
-#include <memory>
+#include <iostream>
 #include <iterator>
+#include <type_traits>
 
 template<typename ValueType>
 class StringListIterator;
@@ -40,8 +41,11 @@ public:
 		StringListIterator(const StringListIterator& iterator)
 			: m_ptr(iterator.m_ptr)
 		{}
-		
-		~StringListIterator() {}
+
+		operator StringListIterator<const Item>() const
+		{
+			return StringListIterator<const Item>(m_ptr);
+		}
 		
 		bool operator!=(StringListIterator const& other) const
 		{
@@ -65,12 +69,20 @@ public:
 
 		StringListIterator<ValueType>& operator++()
 		{
+			if (m_ptr->m_pNext == nullptr)
+			{
+				throw std::out_of_range("can't increment iterator after past end");
+			}
 			m_ptr = m_ptr->m_pNext;
 			return *this;
 		}
 
 		StringListIterator<ValueType> operator++(int)
 		{
+			if (m_ptr->m_pNext == nullptr)
+			{
+				throw std::out_of_range("can't increment iterator after past end");
+			}
 			StringListIterator<ValueType> temp = *this;
 			++*this;
 			return temp;
@@ -79,21 +91,23 @@ public:
 		const StringListIterator<ValueType> operator--(int)
 		{
 			StringListIterator<ValueType> temp = *this;
+			if (m_ptr->m_pPrev == nullptr)
+			{
+				throw std::out_of_range("can't decrement iterator before begin");
+			}
 			m_ptr = m_ptr->m_pPrev;
 			return temp;
 		}
 
 		auto& operator--()
 		{
+			if (m_ptr->m_pPrev == nullptr)
+			{
+				throw std::out_of_range("can't decrement iterator before begin");
+			}
 			m_ptr = m_ptr->m_pPrev;
 			return *this;
 		}
-
-		const std::string GetValue()
-		{
-			return m_ptr->m_value;
-		}
-		
 	private:
 		Item* m_ptr;
 	};
@@ -117,24 +131,66 @@ public:
 
 	void PrependItem(std::string const& value);
 	void AppendItem(std::string const& value);
-	template <typename T> void InsertItem(const StringListIterator<T>& it, std::string const& value)
+
+	template <typename T> void InsertItem(const T& it, std::string const& value)
 	{
+		Item* previous = it.m_ptr != m_pHead ? it.m_ptr->m_pPrev : nullptr;
+		Item* newItem = new Item(value, previous, it.m_ptr);
+		if (previous != nullptr)
+		{
+			it.m_ptr->m_pPrev->m_pNext = newItem;
+		}
+		it.m_ptr->m_pPrev = newItem;
+		
+		if (it.m_ptr == m_pHead)
+		{
+			m_pHead = newItem;
+		}
 		if (it.m_ptr == m_linkItem)
 		{
-			AppendItem(value);
+			m_pTail = newItem;
 		}
-		else
+		if (m_count == 0)
 		{
-			Item* newItem = new Item(value, it.m_ptr->m_pPrev, it.m_ptr->m_pNext);
-			it.m_ptr->m_pPrev->m_pNext = newItem;
-			it.m_ptr->m_pNext->m_pPrev = newItem;
-			++m_count;
+			m_pTail = m_pHead;
+			m_linkItem->m_pNext = nullptr;
 		}
+		++m_count;
 	}
-	template <typename T> bool DeleteItem(const StringListIterator<T>& it)
+
+	template <typename T> void DeleteItem(const T& it)
 	{
-		return true;
+		if (m_count == 0)
+		{
+			throw std::invalid_argument("the list is empty");
+		}
+		if (it.m_ptr == m_linkItem)
+		{
+			throw std::invalid_argument("out of range iterator");
+		}
+		if (m_count == 1)
+		{
+			Clear();
+			return;
+		}
+		Item* previous = it.m_ptr == m_pHead ? nullptr : it.m_ptr->m_pPrev;
+		if (previous != nullptr)
+		{
+			previous->m_pNext = it.m_ptr->m_pNext;
+		}
+		it.m_ptr->m_pNext->m_pPrev = previous;
+		if (it.m_ptr == m_pHead)
+		{
+			m_pHead = it.m_ptr->m_pNext;
+		}
+		if (it.m_ptr == m_pTail)
+		{
+			m_pTail = it.m_ptr->m_pPrev;
+		}
+		delete it.m_ptr;
+		--m_count;
 	}
+
 	bool IsEmpty() const;
 	unsigned int GetCount() const;
 	void Clear();
@@ -143,8 +199,8 @@ public:
 
 private:
 	void InitLinkItem();
-	Item * m_pHead = nullptr;
-	Item * m_pTail = nullptr;
+	Item* m_pHead = nullptr;
+	Item* m_pTail = nullptr;
 	Item* m_linkItem;
 	unsigned int m_count = 0;
 };

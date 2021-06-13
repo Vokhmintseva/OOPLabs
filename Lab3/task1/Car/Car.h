@@ -23,7 +23,7 @@ public:
 	unsigned int GetSpeed() const;
 	int GetGear() const;
 	const std::string& GetErrorReason() const &;
-	const std::string GetErrorReason() const &&;
+	std::string GetErrorReason()&&;
 
 private:
 	enum class Gear

@@ -203,7 +203,7 @@ TEST_CASE("method append and prepend")
 	}
 	CHECK(output.str() == "12345");
 	output.str("");
-	for (StringList::Const_reverse_iterator iter = iter = strList.crbegin(); iter != strList.crend(); iter++)
+	for (StringList::Const_reverse_iterator iter = strList.crbegin(); iter != strList.crend(); iter++)
 	{
 		output << iter->m_value;
 	}
@@ -268,23 +268,282 @@ TEST_CASE("one string prepended")
 	CHECK(output.str() == "Another one");
 }
 
-/*TEST_CASE("insert element by iterator")
+TEST_CASE("insert element by forward iterator in the list of several elements")
 {
 	StringList strList;
 	strList.AppendItem("1");
 	strList.AppendItem("2");
 	strList.AppendItem("3");
 	strList.AppendItem("5");
-
-	StringList::Iterator it = strList.begin();
-	it++;
-	it++;
-	it++;
-	strList.InsertItem(it, "4");
 	std::ostringstream output;
-	for (StringList::Const_iterator iter = strList.cbegin(); iter != strList.cend(); iter++)
-	{
-		output << iter->m_value;
+	
+	SECTION("insert into list tail") {
+		StringList::Iterator it = strList.begin();
+		it++;
+		it++;
+		it++;
+		strList.InsertItem(it, "4");
+		for (StringList::Const_iterator iter = strList.cbegin(); iter != strList.cend(); iter++)
+		{
+			output << iter->m_value;
+		}
+		CHECK(output.str() == "12345");
 	}
-	CHECK(output.str() == "12345");
+
+	SECTION("insert into list head") {
+		StringList::Const_iterator it = strList.cbegin();
+		strList.InsertItem(it, "0");
+		for (StringList::Const_iterator iter = strList.cbegin(); iter != strList.cend(); iter++)
+		{
+			output << iter->m_value;
+		}
+		CHECK(output.str() == "01235");
+	}
+
+	SECTION("insert into past-the-last item") {
+		StringList::Iterator it = strList.begin();
+		it++;
+		it++;
+		it++;
+		it++;
+		strList.InsertItem(it, "6");
+		for (StringList::Const_iterator iter = strList.cbegin(); iter != strList.cend(); iter++)
+		{
+			output << iter->m_value;
+		}
+		CHECK(output.str() == "12356");
+		it = strList.begin();
+		CHECK(it->m_value == "1");
+		it = strList.end();
+		--it;
+		CHECK(it->m_value == "6");
+	}
+}
+
+TEST_CASE("insert element by forward iterator in the empty list")
+{
+	StringList strList;
+	StringList::Const_iterator it = strList.begin();
+	std::ostringstream output;
+
+	SECTION("insert first element") {
+		strList.InsertItem(it, "first elem");
+		for (StringList::Const_iterator iter = strList.cbegin(); iter != strList.cend(); iter++)
+		{
+			output << iter->m_value;
+		}
+		CHECK(output.str() == "first elem");
+		CHECK(strList.GetCount() == 1);
+		CHECK(!strList.IsEmpty());
+		it = strList.begin();
+		CHECK(it->m_value == "first elem");
+	}
+
+	SECTION("insert into empty list after increment of iterator") {
+		it++;
+		strList.InsertItem(it, "first elem");
+		for (StringList::Const_iterator iter = strList.cbegin(); iter != strList.cend(); iter++)
+		{
+			output << iter->m_value;
+		}
+		CHECK(output.str() == "first elem");
+		CHECK(strList.GetCount() == 1);
+		CHECK(!strList.IsEmpty());
+		it = strList.begin();
+		CHECK(it->m_value == "first elem");
+	}
+}
+
+TEST_CASE("get not const iterator from const: constructor and converting operator")
+{
+	StringList strList;
+	strList.PrependItem("1");
+	StringList::Iterator iter1 = strList.begin();
+	StringList::Const_iterator iter2(iter1);
+	StringList::Const_iterator iter3 = iter1;
+	CHECK(iter2->m_value == "1");
+	CHECK(iter3->m_value == "1");
+}
+
+
+TEST_CASE("delete element by iterator in the list of several elements")
+{
+	StringList strList;
+	strList.AppendItem("1");
+	strList.AppendItem("2");
+	strList.AppendItem("3");
+	strList.AppendItem("4");
+	StringList::Const_iterator it = strList.cbegin();
+	std::ostringstream output;
+
+	SECTION("delete from list tail") {
+		it++;
+		it++;
+		it++;
+		strList.DeleteItem(it);
+		for (StringList::Const_iterator iter = strList.cbegin(); iter != strList.cend(); iter++)
+		{
+			output << iter->m_value;
+		}
+		CHECK(output.str() == "123");
+		CHECK(strList.GetCount() == 3);
+		CHECK(!strList.IsEmpty());
+		it = strList.cbegin();
+		CHECK(it->m_value == "1");
+		it = strList.cend();
+		--it;
+		CHECK(it->m_value == "3");
+	}
+
+	SECTION("delete from list head") {
+		strList.DeleteItem(it);
+		for (StringList::Const_iterator iter = strList.cbegin(); iter != strList.cend(); iter++)
+		{
+			output << iter->m_value;
+		}
+		CHECK(output.str() == "234");
+		CHECK(strList.GetCount() == 3);
+		CHECK(!strList.IsEmpty());
+		it = strList.cbegin();
+		CHECK(it->m_value == "2");
+		it = strList.cend();
+		--it;
+		CHECK(it->m_value == "4");
+	}
+
+	SECTION("delete from list middle") {
+		++it;
+		++it;
+		strList.DeleteItem(it);
+		for (StringList::Const_iterator iter = strList.cbegin(); iter != strList.cend(); iter++)
+		{
+			output << iter->m_value;
+		}
+		CHECK(output.str() == "124");
+		CHECK(strList.GetCount() == 3);
+		CHECK(!strList.IsEmpty());
+		it = strList.cbegin();
+		CHECK(it->m_value == "1");
+		it = strList.cend();
+		--it;
+		CHECK(it->m_value == "4");
+	}
+}
+
+TEST_CASE("increment")
+{
+	StringList strList;
+	strList.AppendItem("1");
+	strList.AppendItem("2");
+	strList.AppendItem("3");
+	strList.AppendItem("4");
+	StringList::Const_iterator it = strList.cbegin();
+	it++;
+	CHECK(it->m_value == "2");
+	++it;
+	it++;
+	CHECK(it->m_value == "4");
+	++it;
+	CHECK(it == strList.cend());
+	REQUIRE_THROWS_WITH(it++, "can't increment iterator after past end");
+	REQUIRE_THROWS_WITH(++it, "can't increment iterator after past end");
+}
+
+TEST_CASE("decrement")
+{
+	StringList strList;
+	strList.AppendItem("1");
+	strList.AppendItem("2");
+	strList.AppendItem("3");
+	strList.AppendItem("4");
+	StringList::Const_iterator it = strList.cend();
+	it--;
+	CHECK(it->m_value == "4");
+	--it;
+	it--;
+	CHECK(it->m_value == "2");
+	it--;
+	CHECK(it == strList.cbegin());
+	REQUIRE_THROWS_WITH(it--, "can't decrement iterator before begin");
+	REQUIRE_THROWS_WITH(--it, "can't decrement iterator before begin");
+}
+
+/*TEST_CASE("insert element by forward iterator in the list of several elements")
+{
+	StringList strList;
+	strList.AppendItem("1");
+	strList.AppendItem("2");
+	strList.AppendItem("3");
+	strList.AppendItem("4");
+	std::ostringstream output;
+
+
+
+	SECTION("insert into list head") {
+		StringList::Const_iterator it = strList.cbegin();
+		strList.InsertItem(it, "0");
+		for (StringList::Const_iterator iter = strList.cbegin(); iter != strList.cend(); iter++)
+		{
+			output << iter->m_value;
+		}
+		CHECK(output.str() == "01234");
+	}
+
+	SECTION("insert into past-the-last item") {
+		StringList::Iterator it = strList.begin();
+		it++;
+		it++;
+		it++;
+		it++;
+		strList.InsertItem(it, "6");
+		for (StringList::Const_iterator iter = strList.cbegin(); iter != strList.cend(); iter++)
+		{
+			output << iter->m_value;
+		}
+		CHECK(output.str() == "12346");
+		it = strList.begin();
+		CHECK(it->m_value == "1");
+		it = strList.end();
+		--it;
+		CHECK(it->m_value == "6");
+	}
+}
+
+TEST_CASE("insert element by reverse iterator in the list of several elements")
+{
+	StringList strList;
+	strList.AppendItem("1");
+	strList.AppendItem("2");
+	strList.AppendItem("3");
+	strList.AppendItem("4");
+	std::ostringstream output;
+
+	SECTION("insert into list head") {
+		StringList::Reverse_iterator it = strList.rbegin();
+		strList.InsertItem(it, "0");
+		for (StringList::Const_iterator iter = strList.cbegin(); iter != strList.cend(); iter++)
+		{
+			output << iter->m_value;
+		}
+		CHECK(output.str() == "01234");
+	}
+
+	SECTION("insert into past-the-last item") {
+		StringList::Iterator it = strList.begin();
+		it++;
+		it++;
+		it++;
+		it++;
+		strList.InsertItem(it, "6");
+		for (StringList::Const_iterator iter = strList.cbegin(); iter != strList.cend(); iter++)
+		{
+			output << iter->m_value;
+		}
+		CHECK(output.str() == "12346");
+		it = strList.begin();
+		CHECK(it->m_value == "1");
+		it = strList.end();
+		--it;
+		CHECK(it->m_value == "6");
+	}
 }*/

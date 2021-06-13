@@ -18,28 +18,12 @@ void StringList::InitLinkItem()
 
 void StringList::PrependItem(std::string const& value)
 {
-    Item* newHead = new Item(value, m_linkItem, m_pHead);
-    m_linkItem->m_pNext = newHead;
-    if (!m_count)
-    {
-        m_pTail = newHead;
-    }
-    m_pHead->m_pPrev = newHead;
-    m_pHead = newHead;
-    ++m_count;
+    InsertItem(begin(), value);
 }
 
 void StringList::AppendItem(std::string const& value)
 {
-    Item* newTail = new Item(value, m_pTail, m_linkItem);
-    m_linkItem->m_pPrev = newTail;
-    if (!m_count)
-    {
-        m_pHead = newTail;
-    }
-    m_pTail->m_pNext = newTail;
-    m_pTail = newTail;
-    ++m_count;
+    InsertItem(end(), value);
 }
 
 bool StringList::IsEmpty() const

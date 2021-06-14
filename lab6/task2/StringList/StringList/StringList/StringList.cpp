@@ -1,12 +1,50 @@
 ﻿#include "StringList.h"
 #include <iostream>
+#include <memory>
 
 StringList::StringList()
     :m_count(0)
 {
     m_linkItem = new Item("", nullptr, nullptr);
     InitLinkItem();
- }
+};
+
+StringList::StringList(const StringList& otherStrList)
+    : StringList()
+{
+    //m_linkItem = new Item("", nullptr, nullptr);
+    //InitLinkItem();
+    try
+    {
+        for (auto& item : otherStrList)
+        {
+            AppendItem(item.m_value);
+        }
+
+        /*for (StringList::Const_iterator iter = otherStrList.cbegin(); iter != otherStrList.cend(); ++iter)
+        {
+            AppendItem(iter->m_value);
+        }*/
+    }
+    catch (std::exception const&)
+    {
+        Clear();
+        delete m_linkItem;
+        throw;
+    }
+}
+
+StringList::StringList(StringList&& otherStrList)
+    : m_count(0)
+    , m_pHead(nullptr)
+    , m_pTail(nullptr)
+    , m_linkItem(nullptr)
+{
+    std::swap(m_count, otherStrList.m_count);
+    std::swap(m_pHead, otherStrList.m_pHead);
+    std::swap(m_pTail, otherStrList.m_pTail);
+    std::swap(m_linkItem, otherStrList.m_linkItem);
+}
 
 void StringList::InitLinkItem()
 {
@@ -89,7 +127,7 @@ StringList::Reverse_iterator StringList::rend() const
     return Reverse_iterator(begin());
 }
 
-StringList::Reverse_iterator StringList::rbegin() const 
+StringList::Reverse_iterator StringList::rbegin() const
 {
     return Reverse_iterator(end());
 }
@@ -103,4 +141,3 @@ StringList::Const_reverse_iterator StringList::crend() const
 {
     return Const_reverse_iterator(cbegin());
 }
-

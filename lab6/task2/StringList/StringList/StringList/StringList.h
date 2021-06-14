@@ -1,15 +1,14 @@
-#pragma once
+п»ї#pragma once
 #include <string>
 #include <iostream>
 #include <iterator>
-#include <type_traits>
 
 template<typename ValueType>
 class StringListIterator;
 
 class StringList
 {
-public:	
+public:
 	struct Item
 	{
 		Item(std::string const& value, Item* pPrev, Item* pNext)
@@ -18,13 +17,13 @@ public:
 			, m_pNext(pNext)
 		{};
 
-    	std::string m_value;
+		std::string m_value;
 		Item* m_pPrev;
 		Item* m_pNext;
 	};
 
 	template<typename ValueType>
-	class StringListIterator 
+	class StringListIterator
 	{
 	public:
 		friend class StringList;
@@ -33,11 +32,11 @@ public:
 		using value_type = ValueType;
 		using pointer = ValueType*;
 		using reference = ValueType&;
-		
-		StringListIterator(Item* ptr = nullptr) 
+
+		StringListIterator(Item* ptr = nullptr)
 			: m_ptr(ptr)
 		{}
-		
+
 		StringListIterator(const StringListIterator& iterator)
 			: m_ptr(iterator.m_ptr)
 		{}
@@ -46,7 +45,7 @@ public:
 		{
 			return StringListIterator<const Item>(m_ptr);
 		}
-		
+
 		bool operator!=(StringListIterator const& other) const
 		{
 			return m_ptr != other.m_ptr;
@@ -56,7 +55,7 @@ public:
 		{
 			return m_ptr == other.m_ptr;
 		}
-		
+
 		reference operator*() const
 		{
 			return *m_ptr;
@@ -84,7 +83,7 @@ public:
 				throw std::out_of_range("can't increment iterator after past end");
 			}
 			StringListIterator<ValueType> temp = *this;
-			++*this;
+			++* this;
 			return temp;
 		}
 
@@ -117,16 +116,18 @@ public:
 	typedef std::reverse_iterator<Const_iterator> Const_reverse_iterator;
 	typedef std::reverse_iterator<Iterator> Reverse_iterator;
 
-	Iterator begin() const; //возвращает объект с указателем на начало списка
-	Iterator end() const; //возвращает объект с указателем на конец списка
-	Const_iterator cbegin() const; 
+	Iterator begin() const;
+	Iterator end() const;
+	Const_iterator cbegin() const;
 	Const_iterator cend() const;
 	Reverse_iterator rbegin() const;
 	Reverse_iterator rend() const;
 	Const_reverse_iterator crbegin() const;
 	Const_reverse_iterator crend() const;
-	
+
 	StringList();
+	StringList(const StringList& otherStrList);
+	StringList(StringList&& otherStrList);
 	~StringList();
 
 	void PrependItem(std::string const& value);
@@ -134,19 +135,19 @@ public:
 
 	template <typename T> void InsertItem(const T& it, std::string const& value)
 	{
-		Item* previous = it.m_ptr != m_pHead ? it.m_ptr->m_pPrev : nullptr;
+		Item* previous = it != m_pHead ? it->m_pPrev : nullptr;
 		Item* newItem = new Item(value, previous, it.m_ptr);
 		if (previous != nullptr)
 		{
-			it.m_ptr->m_pPrev->m_pNext = newItem;
+			it->m_pPrev->m_pNext = newItem;
 		}
 		it.m_ptr->m_pPrev = newItem;
-		
-		if (it.m_ptr == m_pHead)
+
+		if (it == m_pHead)
 		{
 			m_pHead = newItem;
 		}
-		if (it.m_ptr == m_linkItem)
+		if (it == m_linkItem)
 		{
 			m_pTail = newItem;
 		}
@@ -164,7 +165,7 @@ public:
 		{
 			throw std::invalid_argument("the list is empty");
 		}
-		if (it.m_ptr == m_linkItem)
+		if (it == m_linkItem)
 		{
 			throw std::invalid_argument("out of range iterator");
 		}
@@ -173,19 +174,19 @@ public:
 			Clear();
 			return;
 		}
-		Item* previous = it.m_ptr == m_pHead ? nullptr : it.m_ptr->m_pPrev;
+		Item* previous = it == m_pHead ? nullptr : it->m_pPrev;
 		if (previous != nullptr)
 		{
-			previous->m_pNext = it.m_ptr->m_pNext;
+			previous->m_pNext = it->m_pNext;
 		}
 		it.m_ptr->m_pNext->m_pPrev = previous;
-		if (it.m_ptr == m_pHead)
+		if (it == m_pHead)
 		{
 			m_pHead = it.m_ptr->m_pNext;
 		}
-		if (it.m_ptr == m_pTail)
+		if (it == m_pTail)
 		{
-			m_pTail = it.m_ptr->m_pPrev;
+			m_pTail = it->m_pPrev;
 		}
 		delete it.m_ptr;
 		--m_count;

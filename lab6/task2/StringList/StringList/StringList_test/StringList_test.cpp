@@ -20,7 +20,7 @@ TEST_CASE("method append")
 	strList.AppendItem("thirdString");
 	CHECK(strList.GetCount() == 3);
 	CHECK(!strList.IsEmpty());
-    CHECK(strList.GeatHeadValue() == "firstString");
+	CHECK(strList.GeatHeadValue() == "firstString");
 	CHECK(strList.GeatTailValue() == "thirdString");
 }
 
@@ -54,7 +54,7 @@ TEST_CASE("loops")
 	strList.PrependItem("secondString");
 	strList.PrependItem("firstString");
 	std::ostringstream output;
-	
+
 	SECTION("'range based for' loop")
 	{
 		for (auto&& item : strList)
@@ -276,7 +276,7 @@ TEST_CASE("insert element by forward iterator in the list of several elements")
 	strList.AppendItem("3");
 	strList.AppendItem("5");
 	std::ostringstream output;
-	
+
 	SECTION("insert into list tail") {
 		StringList::Iterator it = strList.begin();
 		it++;
@@ -468,82 +468,37 @@ TEST_CASE("decrement")
 	REQUIRE_THROWS_WITH(--it, "can't decrement iterator before begin");
 }
 
-/*TEST_CASE("insert element by forward iterator in the list of several elements")
+TEST_CASE("copy constructor of not empty list")
 {
 	StringList strList;
 	strList.AppendItem("1");
 	strList.AppendItem("2");
 	strList.AppendItem("3");
 	strList.AppendItem("4");
+	StringList newStrList(strList);
 	std::ostringstream output;
-
-
-
-	SECTION("insert into list head") {
-		StringList::Const_iterator it = strList.cbegin();
-		strList.InsertItem(it, "0");
-		for (StringList::Const_iterator iter = strList.cbegin(); iter != strList.cend(); iter++)
-		{
-			output << iter->m_value;
-		}
-		CHECK(output.str() == "01234");
+	for (auto&& item : newStrList)
+	{
+		output << item.m_value;
 	}
-
-	SECTION("insert into past-the-last item") {
-		StringList::Iterator it = strList.begin();
-		it++;
-		it++;
-		it++;
-		it++;
-		strList.InsertItem(it, "6");
-		for (StringList::Const_iterator iter = strList.cbegin(); iter != strList.cend(); iter++)
-		{
-			output << iter->m_value;
-		}
-		CHECK(output.str() == "12346");
-		it = strList.begin();
-		CHECK(it->m_value == "1");
-		it = strList.end();
-		--it;
-		CHECK(it->m_value == "6");
+	CHECK(output.str() == "1234");
+	CHECK(newStrList.GetCount() == 4);
+	CHECK(!newStrList.IsEmpty());
+	StringList::Iterator it = newStrList.begin();
+	CHECK(it->m_value == "1");
+	output.str("");
+	for (auto&& item : strList)
+	{
+		output << item.m_value;
 	}
+	CHECK(output.str() == "1234");
 }
 
-TEST_CASE("insert element by reverse iterator in the list of several elements")
+TEST_CASE("copy constructor of empty list")
 {
 	StringList strList;
-	strList.AppendItem("1");
-	strList.AppendItem("2");
-	strList.AppendItem("3");
-	strList.AppendItem("4");
-	std::ostringstream output;
-
-	SECTION("insert into list head") {
-		StringList::Reverse_iterator it = strList.rbegin();
-		strList.InsertItem(it, "0");
-		for (StringList::Const_iterator iter = strList.cbegin(); iter != strList.cend(); iter++)
-		{
-			output << iter->m_value;
-		}
-		CHECK(output.str() == "01234");
-	}
-
-	SECTION("insert into past-the-last item") {
-		StringList::Iterator it = strList.begin();
-		it++;
-		it++;
-		it++;
-		it++;
-		strList.InsertItem(it, "6");
-		for (StringList::Const_iterator iter = strList.cbegin(); iter != strList.cend(); iter++)
-		{
-			output << iter->m_value;
-		}
-		CHECK(output.str() == "12346");
-		it = strList.begin();
-		CHECK(it->m_value == "1");
-		it = strList.end();
-		--it;
-		CHECK(it->m_value == "6");
-	}
-}*/
+	StringList newStrList(strList);
+	CHECK(newStrList.GetCount() == 0);
+	CHECK(newStrList.IsEmpty());
+	CHECK(newStrList.begin() == newStrList.end());
+}

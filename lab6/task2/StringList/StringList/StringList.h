@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include <string>
-#include <iostream>
 #include <iterator>
 
 template<typename ValueType>
@@ -133,60 +132,45 @@ public:
 	void PrependItem(std::string const& value);
 	void AppendItem(std::string const& value);
 
-	template <typename T> void InsertItem(const T& it, std::string const& value)
+	template <typename T> void InsertItem(const StringListIterator<T>& it, std::string const& value)
 	{
-		Item* previous = it != m_pHead ? it->m_pPrev : nullptr;
+		Item* previous = it != m_pFirst ? it->m_pPrev : nullptr;
 		Item* newItem = new Item(value, previous, it.m_ptr);
-		if (previous != nullptr)
+		if (previous)
 		{
 			it->m_pPrev->m_pNext = newItem;
 		}
 		it.m_ptr->m_pPrev = newItem;
-
-		if (it == m_pHead)
+		
+		if (it == m_pFirst)
 		{
-			m_pHead = newItem;
-		}
-		if (it == m_linkItem)
-		{
-			m_pTail = newItem;
+			m_pFirst = newItem;
 		}
 		if (m_count == 0)
 		{
-			m_pTail = m_pHead;
-			m_linkItem->m_pNext = nullptr;
+			m_pPastTheLast->m_pNext = nullptr;
 		}
 		++m_count;
 	}
 
-	template <typename T> void DeleteItem(const T& it)
+	template <typename T> void DeleteItem(const StringListIterator<T>& it)
 	{
 		if (m_count == 0)
 		{
 			throw std::invalid_argument("the list is empty");
 		}
-		if (it == m_linkItem)
+		if (it == m_pPastTheLast)
 		{
 			throw std::invalid_argument("out of range iterator");
 		}
-		if (m_count == 1)
+		if (it->m_pPrev)
 		{
-			Clear();
-			return;
+			it->m_pPrev->m_pNext = it->m_pNext;
 		}
-		Item* previous = it == m_pHead ? nullptr : it->m_pPrev;
-		if (previous != nullptr)
+		it.m_ptr->m_pNext->m_pPrev = it->m_pPrev;
+		if (it == m_pFirst)
 		{
-			previous->m_pNext = it->m_pNext;
-		}
-		it.m_ptr->m_pNext->m_pPrev = previous;
-		if (it == m_pHead)
-		{
-			m_pHead = it.m_ptr->m_pNext;
-		}
-		if (it == m_pTail)
-		{
-			m_pTail = it->m_pPrev;
+			m_pFirst = it.m_ptr->m_pNext;
 		}
 		delete it.m_ptr;
 		--m_count;
@@ -195,13 +179,9 @@ public:
 	bool IsEmpty() const;
 	unsigned int GetCount() const;
 	void Clear();
-	std::string GeatHeadValue() const;
-	std::string GeatTailValue() const;
-
 private:
 	void InitLinkItem();
-	Item* m_pHead = nullptr;
-	Item* m_pTail = nullptr;
-	Item* m_linkItem;
+	Item* m_pFirst;
+	Item* m_pPastTheLast;
 	unsigned int m_count = 0;
 };

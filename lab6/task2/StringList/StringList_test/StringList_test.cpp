@@ -20,8 +20,6 @@ TEST_CASE("method append")
 	strList.AppendItem("thirdString");
 	CHECK(strList.GetCount() == 3);
 	CHECK(!strList.IsEmpty());
-	CHECK(strList.GeatHeadValue() == "firstString");
-	CHECK(strList.GeatTailValue() == "thirdString");
 }
 
 TEST_CASE("method prepend")
@@ -32,8 +30,6 @@ TEST_CASE("method prepend")
 	strList.PrependItem("firstString");
 	CHECK(strList.GetCount() == 3);
 	CHECK(!strList.IsEmpty());
-	CHECK(strList.GeatHeadValue() == "firstString");
-	CHECK(strList.GeatTailValue() == "thirdString");
 }
 
 TEST_CASE("method Clear")
@@ -193,8 +189,6 @@ TEST_CASE("method append and prepend")
 	strList.PrependItem("1");
 	CHECK(strList.GetCount() == 5);
 	CHECK(!strList.IsEmpty());
-	CHECK(strList.GeatHeadValue() == "1");
-	CHECK(strList.GeatTailValue() == "5");
 	std::ostringstream output;
 
 	for (auto&& item : strList)
@@ -428,6 +422,46 @@ TEST_CASE("delete element by iterator in the list of several elements")
 		--it;
 		CHECK(it->m_value == "4");
 	}
+
+	SECTION("delete from past-the-last item") {
+		++it;
+		++it;
+		++it;
+		++it;
+		REQUIRE_THROWS_WITH(strList.DeleteItem(it), "out of range iterator");
+	}
+}
+
+TEST_CASE("delete from empty list")
+{
+	StringList strList;
+	REQUIRE_THROWS_WITH(strList.DeleteItem(strList.begin()), "the list is empty");
+	REQUIRE_THROWS_WITH(strList.DeleteItem(strList.end()), "the list is empty");
+}
+
+TEST_CASE("full delete and insert")
+{
+	StringList strList;
+	strList.AppendItem("1");
+	strList.AppendItem("2");
+	strList.AppendItem("3");
+	strList.DeleteItem(strList.begin());
+	strList.DeleteItem(strList.begin());
+	strList.DeleteItem(strList.begin());
+	REQUIRE_THROWS_WITH(strList.DeleteItem(strList.begin()), "the list is empty");
+	CHECK(strList.GetCount() == 0);
+	CHECK(strList.IsEmpty());
+	strList.PrependItem("6");
+	strList.PrependItem("5");
+	strList.PrependItem("4");
+	CHECK(strList.GetCount() == 3);
+	CHECK(!strList.IsEmpty());
+	std::ostringstream output;
+	for (StringList::Const_iterator iter = strList.cbegin(); iter != strList.cend(); iter++)
+	{
+		output << iter->m_value;
+	}
+	CHECK(output.str() == "456");
 }
 
 TEST_CASE("increment")
@@ -498,6 +532,34 @@ TEST_CASE("copy constructor of empty list")
 {
 	StringList strList;
 	StringList newStrList(strList);
+	CHECK(newStrList.GetCount() == 0);
+	CHECK(newStrList.IsEmpty());
+	CHECK(newStrList.begin() == newStrList.end());
+}
+
+TEST_CASE("move constructor of not empty list")
+{
+	StringList strList;
+	strList.AppendItem("1");
+	strList.AppendItem("2");
+	strList.AppendItem("3");
+	strList.AppendItem("4");
+	StringList newStrList(std::move(strList));
+	std::ostringstream output;
+	for (auto&& item : newStrList)
+	{
+		output << item.m_value;
+	}
+	CHECK(output.str() == "1234");
+	CHECK(newStrList.GetCount() == 4);
+	CHECK(!newStrList.IsEmpty());
+	CHECK(newStrList.begin()->m_value == "1");
+}
+
+TEST_CASE("move constructor of empty list")
+{
+	StringList strList;
+	StringList newStrList(std::move(strList));
 	CHECK(newStrList.GetCount() == 0);
 	CHECK(newStrList.IsEmpty());
 	CHECK(newStrList.begin() == newStrList.end());

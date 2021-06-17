@@ -84,18 +84,13 @@ double Compound::GetMass() const
 		[](double volumeTotal, const std::shared_ptr<Body>& child) { return volumeTotal + child->GetMass(); });
 }
 
-std::string Compound::ToString(int level) const
+void Compound::AppendProperties(std::ostream& strm, int level) const
 {
-	std::string baseInfo = Body::ToString(level);
 	std::string shift(level, (char)0x20);
-	std::string infoTotal;
-	infoTotal.append(shift);
-	infoTotal.append("BEGIN_BODIES_IN_COMPOUND:\n");
+	strm << shift << "BEGIN_BODIES_IN_COMPOUND:\n";
 	level += 2;
 	std::string nestedBodiesInfo = std::accumulate(m_children.begin(), m_children.end(), std::string{},
 		[level](std::string infoTotal, const std::shared_ptr<Body>& child) { return infoTotal += child->ToString(level) + '\n'; });
-	infoTotal.append(nestedBodiesInfo);
-	infoTotal.append(shift);
-	infoTotal.append("END_BODIES_IN_COMPOUND\n");
-	return baseInfo.append(std::move(infoTotal));
+	strm << nestedBodiesInfo;
+	strm << shift << "END_BODIES_IN_COMPOUND\n";
 }

@@ -7,11 +7,11 @@ class Cone final:
 public:
     Cone(double density, double baseRadius, double height);
     std::string GetName() const override;
-    std::string ToString(int level) const override;
     double GetVolume() const override;
     double GetHeight() const;
     double GetBaseRadius() const;
 private:
+    void AppendProperties(std::ostream& strm, int level) const override;
     double m_baseRadius;
     double m_height;
 };

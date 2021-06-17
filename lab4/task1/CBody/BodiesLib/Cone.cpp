@@ -28,14 +28,9 @@ double Cone::GetBaseRadius() const
 	return m_baseRadius;
 }
 
-std::string Cone::ToString(int level) const
+void Cone::AppendProperties(std::ostream& strm, int level) const
 {
-	std::string baseInfo = Body::ToString(level);
-	std::ostringstream info;
 	std::string shift(level, (char)0x20);
-	info << std::fixed << std::setprecision(2);
-	info << shift << "Height: " << GetHeight() << "\n";
-	info << shift << "BaseRadius: " << GetBaseRadius() << "\n";
-	std::string infoStr = info.str();
-	return std::move(baseInfo.append(std::move(infoStr)));
+	strm << shift << "Height: " << GetHeight() << "\n";
+	strm << shift << "BaseRadius: " << GetBaseRadius() << "\n";
 }

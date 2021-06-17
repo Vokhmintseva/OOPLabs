@@ -34,15 +34,10 @@ double Parallelepiped::GetVolume() const
 	return m_width * m_height * m_depth;
 }
 
-std::string Parallelepiped::ToString(int level) const
+void Parallelepiped::AppendProperties(std::ostream& strm, int level) const
 {
-	std::string baseInfo = Body::ToString(level);
-	std::ostringstream info;
 	std::string shift(level, (char)0x20);
-	info << std::fixed << std::setprecision(2);
-	info << shift << "Width: " << GetWidth() << "\n";
-	info << shift << "Height: " << GetHeight() << "\n";
-	info << shift << "Depth: " << GetDepth() << "\n";
-	std::string infoStr = info.str();
-	return std::move(baseInfo.append(std::move(infoStr)));
+	strm << shift << "Width: " << GetWidth() << "\n";
+	strm << shift << "Height: " << GetHeight() << "\n";
+	strm << shift << "Depth: " << GetDepth() << "\n";
 }

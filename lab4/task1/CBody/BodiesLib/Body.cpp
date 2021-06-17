@@ -10,5 +10,6 @@ std::string Body::ToString(int level) const
 	info << shift << "Density: " << GetDensity() << '\n';
 	info << shift << "Volume: " << GetVolume() << '\n';
 	info << shift << "Mass: " << GetMass() << '\n';
+	AppendProperties(info, level);
 	return info.str();
 }

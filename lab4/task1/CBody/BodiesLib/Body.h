@@ -9,4 +9,6 @@ public:
 	virtual std::string GetName() const = 0;
 	virtual std::string ToString(int level) const;
 	virtual ~Body() = default;
+private:
+	virtual void AppendProperties(std::ostream& strm, int level) const = 0;
 };

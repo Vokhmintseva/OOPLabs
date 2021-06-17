@@ -30,14 +30,9 @@ double Cylinder::GetVolume() const
 	return M_PI * pow(m_baseRadius, 2) * m_height;
 }
 
-std::string Cylinder::ToString(int level) const
+void Cylinder::AppendProperties(std::ostream& strm, int level) const
 {
-	std::string baseInfo = Body::ToString(level);
-	std::ostringstream info;
 	std::string shift(level, (char)0x20);
-	info << std::fixed << std::setprecision(2);
-	info << shift << "Height: " << GetHeight() << "\n";
-	info << shift << "BaseRadius: " << GetBaseRadius() << "\n";
-	std::string infoStr = info.str();
-	return std::move(baseInfo.append(std::move(infoStr)));
+	strm << shift << "Height: " << GetHeight() << "\n";
+	strm << shift << "BaseRadius: " << GetBaseRadius() << "\n";
 }

@@ -22,13 +22,8 @@ double Sphere::GetVolume() const
 	return (4 * M_PI * pow(m_radius, 3)) / 3;
 }
 
-std::string Sphere::ToString(int level) const
+void Sphere::AppendProperties(std::ostream& strm, int level) const
 {
-	std::string baseInfo = Body::ToString(level);
-	std::ostringstream info;
 	std::string shift(level, (char)0x20);
-	info << std::fixed << std::setprecision(2);
-	info << shift << "Radius: " << GetRadius() << "\n";
-	std::string infoStr = info.str();
-	return baseInfo.append(std::move(infoStr));
+	strm << shift << "Radius: " << GetRadius() << "\n";
 }

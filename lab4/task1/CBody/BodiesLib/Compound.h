@@ -16,9 +16,9 @@ public:
     double GetVolume() const override;
     double GetMass() const override;
     std::string GetName() const override;
-    std::string ToString(int level) const override;
     bool AddChildBody(std::shared_ptr<Body> childPtr);
 private:
+    void AppendProperties(std::ostream& strm, int level) const override;
     std::weak_ptr<Body> GetParentPtr() const;
     void SetParentPtr(std::shared_ptr<Body> parentPtr);
     std::vector<std::shared_ptr<Body>> m_children;

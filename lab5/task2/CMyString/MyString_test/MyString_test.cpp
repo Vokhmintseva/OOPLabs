@@ -529,3 +529,41 @@ TEST_CASE("move operator =")
 	CHECK(newStr3.GetLength() == 11);
 	CHECK(newStr3.GetStringData()[11] == '\0');
 }
+
+TEST_CASE("forward not const iterator")
+{
+	MyString originalStr = MyString("Codes");
+	auto it = originalStr.begin();
+	*originalStr.begin() = 'N';
+	it++;
+	CHECK(*it == 'o');
+	++it;
+	CHECK(*it == 'd');
+	it++;
+	CHECK(*it == 'e');
+	++it;
+	*it = 'e';
+	CHECK(*it == 'e');
+	it++;
+	CHECK(it == originalStr.end());
+	CHECK(*it == '\0');
+	CHECK(originalStr == MyString("Nodee"));
+}
+
+TEST_CASE("forward const iterator")
+{
+	const MyString originalStr = MyString("Codes");
+	auto it = originalStr.begin();
+	CHECK(*it == 'C');
+	it++;
+	CHECK(*it == 'o');
+	++it;
+	CHECK(*it == 'd');
+	it++;
+	CHECK(*it == 'e');
+	++it;
+	CHECK(*it == 's');
+	it++;
+	CHECK(it == originalStr.end());
+	CHECK(originalStr == MyString("Codes"));
+}

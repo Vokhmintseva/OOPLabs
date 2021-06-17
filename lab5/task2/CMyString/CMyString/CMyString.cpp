@@ -3,12 +3,10 @@
 
 #include <iostream>
 #include "MyString.h"
+#include <vector>
 
 int main()
 {
-    MyString s1("Calculator");
-    MyString s2("Calculator");
-    bool isEquial = s1 == s2;
-    std::cout << isEquial << std::endl;
+
 }
 

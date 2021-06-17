@@ -63,15 +63,6 @@ template <typename Base>
 class CPersonImpl : public Base
 {
 public:
-	CPersonImpl() {};
-
-	CPersonImpl(std::string lastname, std::string name, std::string middlename, std::string address)
-		: m_lastname(lastname)
-		, m_name(name)
-		, m_middlename(middlename)
-		, m_address(address)
-	{}
-
 	std::string GetLastname() const override
 	{
 		return m_lastname;
@@ -104,6 +95,15 @@ public:
 	{
 		m_address = address;
 	}
+protected:
+	CPersonImpl() {};
+
+	CPersonImpl(std::string lastname, std::string name, std::string middlename, std::string address)
+		: m_lastname(lastname)
+		, m_name(name)
+		, m_middlename(middlename)
+		, m_address(address)
+	{};
 private:
 	std::string m_lastname;
 	std::string m_name;
@@ -115,14 +115,6 @@ template <typename Base>
 class CStudentImpl : public CPersonImpl<Base>
 {
 public:
-	CStudentImpl() {};
-	
-	CStudentImpl(std::string lastname, std::string name, std::string middlename, std::string address, std::string university, std::string studentCard)
-		: m_university(university)
-		, m_studentCard(studentCard)
-		, CPersonImpl<Base>(lastname, name, middlename, address)
-	{}
-	
 	std::string GetUniversity() const
 	{
 		return m_university;
@@ -142,6 +134,14 @@ public:
 	{
 		m_studentCard = studentCard;
 	}
+protected:
+	CStudentImpl() {};
+
+	CStudentImpl(std::string lastname, std::string name, std::string middlename, std::string address, std::string university, std::string studentCard)
+		: m_university(university)
+		, m_studentCard(studentCard)
+		, CPersonImpl<Base>(lastname, name, middlename, address)
+	{}
 private:
 	std::string m_university;
 	std::string m_studentCard;

@@ -2,6 +2,8 @@
 #include <stdexcept>
 #include <iostream>
 #include <cassert>
+#include <type_traits>
+
 
 MyString::MyString()
 	:m_pString(new char[1])
@@ -116,20 +118,22 @@ MyString& MyString::operator +=(MyString const& s)
 	m_length += s.GetLength();
 	return *this;
 }
-/*
-MyString& MyString::operator +=(MyString const& s)
-{
-	char* newStr = new char[m_length + strlen(s.GetStringData()) + 1];
-	memcpy(newStr, m_pString, m_length);
-	memcpy(newStr + m_length, s.GetStringData(), s.GetLength() + 1);
-	delete[] m_pString;
-	m_pString = newStr;
-	m_length += strlen(s.GetStringData());
-	return *this;
-}
-*/
 
-const char& MyString::operator[](size_t index)const
+/*MyString operator +(MyString lhs, const MyString& rhs)
+{
+	return lhs += rhs;
+}*/
+
+MyString operator +(const MyString lhs, const MyString& rhs)
+{
+	size_t newStrLen = lhs.GetLength() + rhs.GetLength();
+	char* data = new char[newStrLen + 1];
+	memcpy(data, lhs.GetStringData(), lhs.GetLength());
+	memcpy(data + lhs.GetLength(), rhs.GetStringData(), rhs.GetLength() + 1);
+	return MyString(data, newStrLen, MyString::Tag{});
+}
+
+const char& MyString::operator[](size_t index) const
 {
 	if (index >= m_length)
 	{
@@ -190,20 +194,6 @@ bool operator !=(const MyString& lhs, const MyString& rhs)
 	return !(lhs == rhs);
 }
 
-/*MyString operator +(MyString lhs, const MyString& rhs)
-{
-	return lhs += rhs;
-}*/
-
-MyString operator +(const MyString lhs, const MyString& rhs)
-{
-	size_t newStrLen = lhs.GetLength() + rhs.GetLength();
-	char* data = new char[newStrLen + 1];
-	memcpy(data, lhs.GetStringData(), lhs.GetLength());
-	memcpy(data + lhs.GetLength(), rhs.GetStringData(), rhs.GetLength() + 1);
-	return MyString(data, newStrLen, MyString::Tag{});
-}
-
 std::ostream& operator<<(std::ostream& stream, MyString const& cstr)
 {
 	for (size_t i = 0; i < cstr.GetLength(); i++)
@@ -228,7 +218,7 @@ bool operator >=(const MyString& lhs, const MyString& rhs)
 
 std::istream& operator>>(std::istream& stream, MyString& cstr)
 {
-	const size_t MAX_SIZE = 150;
+	const size_t MAX_SIZE = 5;
 	char ch;
 	char buffer[MAX_SIZE + 1];
 	buffer[MAX_SIZE] = '\0';
@@ -247,4 +237,24 @@ std::istream& operator>>(std::istream& stream, MyString& cstr)
 		cstr += MyString(buffer, index);
 	}
 	return stream;
+}
+
+MyString::Iterator MyString::begin()
+{
+	return Iterator(m_pString);
+}
+
+MyString::Iterator MyString::end()
+{
+	return Iterator(m_pString + m_length);
+}
+
+MyString::ConstIterator MyString::begin() const
+{
+	return ConstIterator(m_pString);
+}
+
+MyString::ConstIterator MyString::end() const
+{
+	return ConstIterator(m_pString + m_length);
 }

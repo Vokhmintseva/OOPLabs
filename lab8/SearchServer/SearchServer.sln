@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SearchServer", "SearchServer\SearchServer.vcxproj", "{E7AD6800-3907-4917-9158-7CFEA9D32552}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SearchServer_tests", "SearchServer_tests\SearchServer_tests.vcxproj", "{208A8E66-92C0-4BF0-B8AE-19A56552C672}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -23,14 +21,6 @@ Global
 		{E7AD6800-3907-4917-9158-7CFEA9D32552}.Release|x64.Build.0 = Release|x64
 		{E7AD6800-3907-4917-9158-7CFEA9D32552}.Release|x86.ActiveCfg = Release|Win32
 		{E7AD6800-3907-4917-9158-7CFEA9D32552}.Release|x86.Build.0 = Release|Win32
-		{208A8E66-92C0-4BF0-B8AE-19A56552C672}.Debug|x64.ActiveCfg = Debug|x64
-		{208A8E66-92C0-4BF0-B8AE-19A56552C672}.Debug|x64.Build.0 = Debug|x64
-		{208A8E66-92C0-4BF0-B8AE-19A56552C672}.Debug|x86.ActiveCfg = Debug|Win32
-		{208A8E66-92C0-4BF0-B8AE-19A56552C672}.Debug|x86.Build.0 = Debug|Win32
-		{208A8E66-92C0-4BF0-B8AE-19A56552C672}.Release|x64.ActiveCfg = Release|x64
-		{208A8E66-92C0-4BF0-B8AE-19A56552C672}.Release|x64.Build.0 = Release|x64
-		{208A8E66-92C0-4BF0-B8AE-19A56552C672}.Release|x86.ActiveCfg = Release|Win32
-		{208A8E66-92C0-4BF0-B8AE-19A56552C672}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

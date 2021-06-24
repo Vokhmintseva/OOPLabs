@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <optional>
 
 class SearchServer
 {
@@ -18,10 +19,10 @@ public:
 	int GetDocumentCount() const;
 	std::vector<int> FindDocumentsIds(const std::string& query) const;
 	std::vector<Document> FindDocuments(const std::string& query) const;
-	std::vector<Document> FindDocumentsIt(const std::string& query) const;
 	std::vector<Document> FindDocumentsWithRelevance(const std::string& query) const;
 private:
 	std::vector<Document> m_documents;
+	std::optional<Document>const& GetDocumentById(int id);
 };
 
-static std::vector<std::string> GetQueryStrings(const std::string& query);
+std::vector<std::string> GetQueryStrings(const std::string& query);

@@ -20,15 +20,8 @@ int SearchServer::GetDocumentCount() const
 
 std::vector<int> SearchServer::FindDocumentsIds(const std::string& query) const
 {
-	std::vector<int> results;
-	//std::stringstream queryStrm(query);
 	std::vector<std::string> queryStrings = GetQueryStrings(query);
-	/*std::string str;
-	while (queryStrm >> str)
-	{
-		queryStrings.push_back(str);
-	}*/
-
+	std::vector<int> results;
 	for (auto doc : m_documents)
 	{
 		bool found = false;
@@ -49,37 +42,6 @@ std::vector<int> SearchServer::FindDocumentsIds(const std::string& query) const
 				results.push_back(doc.id);
 				break;
 			}
-		}
-	}
-	return results;
-}
-
-std::vector<SearchServer::Document> SearchServer::FindDocumentsIt(const std::string& query) const
-{
-	std::vector<std::string> queryStrings = GetQueryStrings(query);
-
-	std::vector<SearchServer::Document> results;
-	for (auto doc : m_documents)
-	{
-		std::stringstream text(doc.text);
-		std::istream_iterator<std::string> f;
-		auto it = std::find_if(std::istream_iterator<std::string>(text),
-			f,
-			[queryStrings](const std::string& str)
-			{
-				for (auto queryStr : queryStrings)
-				{
-					if (queryStr == str)
-					{
-						return true;
-					}
-				}
-			}
-		);
-		if (it != f)
-		{
-			Document foundDocument = { doc.id, doc.text };
-			results.emplace_back(std::move(foundDocument));
 		}
 	}
 	return results;
@@ -162,3 +124,14 @@ std::vector<std::string> GetQueryStrings(const std::string& query)
 	}
 	return queryStrings;
 }
+
+/*std::optional<SearchServer::Document>const& SearchServer::GetDocumentById(int id)
+{
+	std::vector<SearchServer::Document>::iterator it = std::find_if(m_documents.begin(),
+		m_documents.end(), [id](Document const& d) {return d.id == id; });
+	if (it != m_documents.end())
+	{
+		return *it;
+	}
+	return std::nullopt;
+}*/

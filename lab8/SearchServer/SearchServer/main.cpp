@@ -34,10 +34,10 @@ int main()
             std::cout << "index is " << idx << std::endl;
         }
         
-        std::vector<SearchServer::Document> foundDocsWithRelevance = ss.FindDocumentsWithRelevance(inputStr);
+        std::vector<SearchServer::Doc> foundDocsWithRelevance = ss.FindDocumentsWithRelevance(inputStr);
         for (auto doc : foundDocsWithRelevance)
         {
-            std::cout << "index is " << doc.id << " text is " << doc.text << " relevance is " << doc.relevance << std::endl;
+            std::cout << "index is " << doc.id << " relevance is " << doc.relevance << std::endl;
         }
 
         if (inputStr == "end")

@@ -78,11 +78,11 @@ std::vector<SearchServer::Document> SearchServer::FindDocuments(const std::strin
 	return results;
 }
 
-std::vector<SearchServer::Document> SearchServer::FindDocumentsWithRelevance(const std::string& query) const
+std::vector<SearchServer::Doc> SearchServer::FindDocumentsWithRelevance(const std::string& query) const
 {
 	std::vector<std::string> queryStrings = GetQueryStrings(query);
 
-	std::vector<SearchServer::Document> results;
+	std::vector<SearchServer::Doc> results;
 	for (auto doc : m_documents)
 	{
 		std::set<std::string> foundWords;
@@ -102,11 +102,11 @@ std::vector<SearchServer::Document> SearchServer::FindDocumentsWithRelevance(con
 		}
 		if (found)
 		{
-			Document foundDocument = { doc.id, doc.text, foundWords.size() };
+			Doc foundDocument = { doc.id, foundWords.size() };
 			results.emplace_back(std::move(foundDocument));
 		}
 	}
-	std::sort(std::begin(results), std::end(results), [](Document const& doc1, Document const& doc2) {
+	std::sort(std::begin(results), std::end(results), [](Doc const& doc1, Doc const& doc2) {
 		return doc1.relevance > doc2.relevance; });
 	return results;
 }

@@ -530,7 +530,7 @@ TEST_CASE("move operator =")
 	CHECK(newStr3.GetStringData()[11] == '\0');
 }
 
-TEST_CASE("forward not const iterator")
+TEST_CASE("forward not const iterator increment")
 {
 	MyString originalStr = MyString("Codes");
 	auto it = originalStr.begin();
@@ -550,7 +550,7 @@ TEST_CASE("forward not const iterator")
 	CHECK(originalStr == MyString("Nodee"));
 }
 
-TEST_CASE("forward const iterator")
+TEST_CASE("forward const iterator increment")
 {
 	const MyString originalStr = MyString("Codes");
 	auto it = originalStr.begin();
@@ -566,4 +566,24 @@ TEST_CASE("forward const iterator")
 	it++;
 	CHECK(it == originalStr.end());
 	CHECK(originalStr == MyString("Codes"));
+}
+
+TEST_CASE("forward not const iterator decrement")
+{
+	MyString originalStr = MyString("Codes");
+	auto it = originalStr.begin();
+	*originalStr.begin() = 'N';
+	it++;
+	CHECK(*it == 'o');
+	++it;
+	CHECK(*it == 'd');
+	it++;
+	CHECK(*it == 'e');
+	++it;
+	*it = 'e';
+	CHECK(*it == 'e');
+	it++;
+	CHECK(it == originalStr.end());
+	CHECK(*it == '\0');
+	CHECK(originalStr == MyString("Nodee"));
 }

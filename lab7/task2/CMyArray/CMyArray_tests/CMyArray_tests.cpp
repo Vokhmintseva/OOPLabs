@@ -3,7 +3,7 @@
 #include "../CMyArray/MyArray.h"
 #include "../../../../catch.hpp"
 
-TEST_CASE("empty vector of float")
+/*TEST_CASE("empty vector of float")
 {
 	MyArray<float> floatVector;
 	CHECK(floatVector.GetSize() == 0);

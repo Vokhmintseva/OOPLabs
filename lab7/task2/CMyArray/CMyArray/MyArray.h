@@ -9,11 +9,11 @@ class MyArray
 {
 public:
 	MyArray()
-		: m_pItems(new T[DEFAULT_CAPACITY])
+		: m_pItems(static_cast<T*>(operator new(sizeof(T) * DEFAULT_CAPACITY)))
 	{};
 
 	MyArray(const std::initializer_list<T>& il)
-		: m_pItems(new T[DEFAULT_CAPACITY])
+		: m_pItems(static_cast<T*>(operator new(sizeof(T) * DEFAULT_CAPACITY)))
 	{
 		for (const T& i : il)
 		{
@@ -28,17 +28,25 @@ public:
 		T* newArray = nullptr;
 		try
 		{
-			newArray = new T[m_capacity];
+			newArray = static_cast<T*>(operator new(sizeof(T) * m_capacity));
 			std::uninitialized_copy_n(other.m_pItems, m_capacity, newArray);
 			m_pItems = newArray;
 		}
 		catch (...)
 		{
-			delete[] newArray;
+			DeleteMemory(newArray, m_capacity);
 			throw;
 		}
 	}
 	
+	static DeleteMemory(T* memory, int size)
+	{
+		for (int i = 0; i < size; ++i)
+		{
+			(memory + i)->~T();
+		}
+	}
+
 	MyArray(MyArray<T>&& other)
 		: m_size(other.m_size)
 		, m_capacity(other.m_capacity)
@@ -49,7 +57,7 @@ public:
 
 	~MyArray()
 	{
-		delete[] m_pItems;
+		DeleteMemory(m_pItems, m_capacity)
 		m_pItems = nullptr;
 	}
 
@@ -138,18 +146,21 @@ public:
 			T* newArray = nullptr;
 			try
 			{
-				newArray = new T[m_capacity *= 2];
+				newArray = static_cast<T*>(operator new(sizeof(T) * m_capacity * 2));
+				m_capacity *= 2;
 				std::uninitialized_copy_n(m_pItems, m_size, newArray);
-				delete[] m_pItems;
+				DeleteMemory(m_pItems, m_capacity);
 				m_pItems = newArray;
 			}
 			catch (...)
 			{
-				delete[] newArray;
+				DeleteMemory(newArray, m_capacity);
 				throw;
 			}
 		}
-		m_pItems[m_size++] = item;
+		unsigned index = m_size;
+		p_pItems + m_size = new T(item);
+		++m_size;
 	}
 
 	T& operator[](unsigned index)
@@ -170,19 +181,20 @@ public:
 		T* newArray = nullptr;
 		try
 		{
-			newArray = new T[newSize];
+			newArray = static_cast<T*>(operator new(sizeof(T) * newSize));
 			unsigned const minSize = (newSize < m_size) ? newSize : m_size;
 			std::uninitialized_copy_n(m_pItems, minSize, newArray);
 			for (unsigned i = minSize; i < newSize; ++i)
 			{
-				newArray[i] = T();
+				newArray + i = T();
 			}
 		}
 		catch (...)
 		{
-			delete[] newArray;
+			DeleteMemory(newArray, newSize);
 			throw;
 		}
+		DeleteMemory(m_pItems, m_size)
 		delete[] m_pItems;
 		m_pItems = newArray;
 		m_size = newSize;
